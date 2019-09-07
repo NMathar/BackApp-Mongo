@@ -1,36 +1,82 @@
+const fs = require('fs')
 const express = require('express')
 const consola = require('consola')
-const { Nuxt, Builder } = require('nuxt')
-// import { Nuxt, Builder } from 'nuxt'
+// const {Nuxt, Builder} = require('nuxt')
+const {exec} = require('child_process');
+const low = require('lowdb')
+const FileSync = require('lowdb/adapters/FileSync')
+// let nodemailer = require("nodemailer");
+
+// create if file not exists
+fs.closeSync(fs.openSync(__dirname + '/db/settings.json', 'a'))
+
+const adapter = new FileSync(__dirname + '/db/settings.json')
+const db = low(adapter)
+
+// Set some defaults
+db.defaults({dbs: []})
+  .write()
 
 const app = express()
+
+// db.get('dbs')
+//   .push({
+//     id: 1, collection: 'test', hostname: 'localhost', port: '27017',
+//     username: '', password: '', schedule: '*/5 * * * *'
+//   })
+//   .write()
+
+// create mail transporter
+// let transporter = nodemailer.createTransport({
+//   service: "gmail",
+//   auth: {
+//     user: "COMPANYEMAIL@gmail.com",
+//     pass: "userpass"
+//   }
+// });
 
 // Import and Set Nuxt.js options
 const config = require('../nuxt.config.js')
 config.dev = process.env.NODE_ENV !== 'production'
 
-async function start () {
-  // Init Nuxt.js
-  const nuxt = new Nuxt(config)
+app.get('/cron/restart', function (req, res) {
+  exec('npm run cron:restart', (err, stdout, stderr) => {
+    if (stdout) {
+      res.json({success: false, message: stdout});
+    } else {
+      res.json({success: true, message: "cron restart was successful"})
+    }
+  });
+});
 
-  const { host, port } = nuxt.options.server
+app.get('/cron/start', function (req, res) {
+  exec('npm run cron:start --silent', (err, stdout, stderr) => {
+    if (err) {
+      res.json({success: false, message: stderr});
+    } else {
+      res.json({success: true, message: "cron start was successful"})
+    }
+  });
+});
 
-  // Build only in dev mode
-  if (config.dev) {
-    const builder = new Builder(nuxt)
-    await builder.build()
-  } else {
-    await nuxt.ready()
-  }
+app.get('/cron/stop', function (req, res) {
+  exec('npm run cron:stop --silent', (err, stdout, stderr) => {
+    if (err) {
+      res.json({success: false, message: stderr});
+    } else {
+      res.json({success: true, message: "cron stop was successful"})
+    }
+  });
+});
 
-  // Give nuxt middleware to express
-  app.use(nuxt.render)
+app.get('/cron/status', function (req, res) {
+  exec('npm run cron:status --silent', (err, stdout, stderr) => {
+    // console.log(stdout);
+    res.json({success: true, status: stdout})
+  });
+});
 
-  // Listen the server
-  app.listen(port, host)
-  consola.ready({
-    message: `Server listening on http://${host}:${port}`,
-    badge: true
-  })
+module.exports = {
+  path: '/api',
+  handler: app
 }
-start()

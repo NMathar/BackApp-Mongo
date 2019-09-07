@@ -48,5 +48,13 @@ module.exports = {
      */
     extend(config, ctx) {
     }
-  }
+  },
+  serverMiddleware: [
+    // Will register redirect-ssl npm package
+    // 'redirect-ssl',
+
+    // Will register file from project api directory to handle /api/* requires
+    // { path: '/cron/restart', handler: '~/server/index.js' },
+    '~/server/index.js'
+  ]
 };
