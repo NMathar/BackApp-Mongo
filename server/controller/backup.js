@@ -7,7 +7,7 @@ var simpleCrypto = new SimpleCrypto(_secretKey);
 // Create and Save a new Note
 exports.create = (req, res) => {
 // Validate request
-  if (!req.body.hostname || !req.body.collection || !req.body.port || !req.body.schedule) {
+  if (!req.body.hostname || !req.body.collection || !req.body.database || !req.body.port || !req.body.schedule) {
     return res.status(400).send({
       message: "Infos are not complete"
     });
@@ -16,11 +16,13 @@ exports.create = (req, res) => {
   Backup
     .push({
       id: id,
+      database: req.body.database,
       collection: req.body.collection,
       hostname: req.body.hostname,
       port: req.body.port,
       username: req.body.username, password: simpleCrypto.encrypt(req.body.password), //TODO: in frontend/cron -> simpleCrypto.decrypt(cipherText)
-      schedule: req.body.schedule
+      schedule: req.body.schedule,
+      authenticationDatabase: req.body.authenticationDatabase
     })
     .write()
     .id
@@ -58,6 +60,8 @@ exports.findOne = (req, res) => {
 exports.update = (req, res) => {
 
   let updateObj = {};
+  if(req.body.database)
+    updateObj.database = req.body.database
   if (req.body.collection)
     updateObj.collection = req.body.collection
   if (req.body.hostname)
@@ -70,6 +74,8 @@ exports.update = (req, res) => {
     updateObj.password = simpleCrypto.encrypt(req.body.password)
   if (req.body.schedule)
     updateObj.schedule = req.body.schedule
+  if(req.body.authenticationDatabase)
+    updateObj.authenticationDatabase = req.body.authenticationDatabase
 
   let entry = Backup
     .find({id: req.params.id})
