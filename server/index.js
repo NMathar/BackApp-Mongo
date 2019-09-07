@@ -1,30 +1,32 @@
-const fs = require('fs')
 const express = require('express')
+const bodyParser = require('body-parser');
 const consola = require('consola')
 // const {Nuxt, Builder} = require('nuxt')
 const {exec} = require('child_process');
-const low = require('lowdb')
-const FileSync = require('lowdb/adapters/FileSync')
+
 // let nodemailer = require("nodemailer");
 
-// create if file not exists
-fs.closeSync(fs.openSync(__dirname + '/db/settings.json', 'a'))
-
-const adapter = new FileSync(__dirname + '/db/settings.json')
-const db = low(adapter)
-
-// Set some defaults
-db.defaults({dbs: []})
-  .write()
-
 const app = express()
+app.use(bodyParser.json())
 
-// db.get('dbs')
-//   .push({
-//     id: 1, collection: 'test', hostname: 'localhost', port: '27017',
-//     username: '', password: '', schedule: '*/5 * * * *'
-//   })
-//   .write()
+const backup = require('./controller/backup.js');
+const Backup = require('./model/backup.js');
+
+// Create a new Note
+app.post('/backups', backup.create);
+
+// Retrieve all Notes
+app.get('/backups', backup.findAll);
+
+// Retrieve a single Note with noteId
+app.get('/backups/:id', backup.findOne);
+
+// Update a Note with noteId
+app.put('/backups/:id', backup.update);
+
+// Delete a Note with noteId
+app.delete('/backups/:id', backup.delete);
+
 
 // create mail transporter
 // let transporter = nodemailer.createTransport({
@@ -36,8 +38,9 @@ const app = express()
 // });
 
 // Import and Set Nuxt.js options
-const config = require('../nuxt.config.js')
-config.dev = process.env.NODE_ENV !== 'production'
+// const config = require('../nuxt.config.js')
+// config.dev = process.env.NODE_ENV !== 'production'
+
 
 app.get('/cron/restart', function (req, res) {
   exec('npm run cron:restart', (err, stdout, stderr) => {
