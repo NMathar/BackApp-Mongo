@@ -1,0 +1,25 @@
+{
+  "name": "BackApp-Mongo",
+  "version": "1.0.0",
+  "description": "Backup your MongoDB Databases",
+  "author": "NMathar",
+  "private": true,
+  "scripts": {
+    "dev": "nuxt",
+    "build": "nuxt build",
+    "start": "nuxt start",
+    "generate": "nuxt generate"
+  },
+  "dependencies": {
+    "@nuxt/typescript-runtime": "^0.1.5",
+    "ale-mongoutils": "^1.0.2",
+    "bootstrap": "^4.1.3",
+    "bootstrap-vue": "^2.0.0-rc.11",
+    "nuxt": "^2.0.0",
+    "nuxt-property-decorator": "^2.4.0",
+    "vue-property-decorator": "^8.2.2"
+  },
+  "devDependencies": {
+    "@nuxt/typescript-build": "^0.2.6"
+  }
+}
