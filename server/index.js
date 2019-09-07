@@ -37,10 +37,6 @@ app.delete('/backups/:id', backup.delete);
 //   }
 // });
 
-// Import and Set Nuxt.js options
-// const config = require('../nuxt.config.js')
-// config.dev = process.env.NODE_ENV !== 'production'
-
 
 app.get('/cron/restart', function (req, res) {
   exec('npm run cron:restart', (err, stdout, stderr) => {
