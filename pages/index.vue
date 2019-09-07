@@ -28,33 +28,14 @@
   </div>
 </template>
 
-<script lang="ts">
-import { Vue, Component, Prop } from "nuxt-property-decorator";
-import {
-  createDumpCommand,
-  executeCommand,
-  createRestoreCommand
-} from "ale-mongoutils";
-
-interface Credentials {
-  database: string;
-  dist: string;
-  host: string;
-  username?: string;
-  password?: string;
-  collections?: Array<{ name: string; query?: string }>;
-  authenticationDatabase?: string;
-}
-
-@Component
-export default class Index extends Vue {
-  message: string = "This is a message";
-  mongoutils_instaled: boolean = true;
-
-  async mounted() {
-    // this.mongoutils_instaled = await checkInstalled();
-  }
-}
+<script>
+    export default {
+        data(){
+            return {
+                message : "Test1"
+            }
+        }
+    }
 </script>
 
 <style>
