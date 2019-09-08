@@ -9,6 +9,9 @@ const {exec} = require('child_process');
 const app = express()
 app.use(bodyParser.json())
 
+// start cron on app startup
+exec('npm run cron:start --silent');
+
 const backup = require('./controller/backup.js');
 const Backup = require('./model/backup.js');
 
