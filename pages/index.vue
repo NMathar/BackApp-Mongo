@@ -5,7 +5,10 @@
       <h2 class="subtitle">
         Backup your MongoDB Databases
       </h2>
-      <b-button variant="warning" @click="restartCron">Restart</b-button>
+      <b-button variant="warning"
+                @click="restartCron"
+                :disabled="cron_status === 'stopped'"
+      >Restart</b-button>
       <b-button
         variant="success"
         @click="startCron"

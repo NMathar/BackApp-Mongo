@@ -23,11 +23,13 @@ module.exports = {
   /*
    ** Global CSS
    */
-  css: [],
+  css: [
+    { src: '@voerro/vue-tagsinput/dist/style.css', lang: 'css' }
+  ],
   /*
    ** Plugins to load before mounting the App
    */
-  plugins: [],
+  plugins: [{ src: '~/plugins/tag-input', mode: 'client' }],
   /*
    ** Nuxt.js dev-modules
    */

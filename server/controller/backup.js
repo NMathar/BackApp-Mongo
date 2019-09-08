@@ -7,7 +7,7 @@ var simpleCrypto = new SimpleCrypto(_secretKey);
 // Create and Save a new Note
 exports.create = (req, res) => {
 // Validate request
-  if (!req.body.hostname || !req.body.collection || !req.body.database || !req.body.port || !req.body.schedule) {
+  if (!req.body.hostname || !req.body.database || !req.body.port || !req.body.schedule) {
     return res.status(400).send({
       message: "Infos are not complete"
     });
@@ -17,12 +17,13 @@ exports.create = (req, res) => {
     .push({
       id: id,
       database: req.body.database,
-      collection: req.body.collection,
+      collections: collectionArrayFormat(req.body.collections),
       hostname: req.body.hostname,
       port: req.body.port,
       username: req.body.username, password: simpleCrypto.encrypt(req.body.password), //TODO: in frontend/cron -> simpleCrypto.decrypt(cipherText)
       schedule: req.body.schedule,
-      authenticationDatabase: req.body.authenticationDatabase
+      authenticationDatabase: req.body.authenticationDatabase,
+      max_dumps: req.body.max_dumps ? req.body.max_dumps : 3
     })
     .write()
     .id
@@ -60,10 +61,10 @@ exports.findOne = (req, res) => {
 exports.update = (req, res) => {
 
   let updateObj = {};
-  if(req.body.database)
+  if (req.body.database)
     updateObj.database = req.body.database
-  if (req.body.collection)
-    updateObj.collection = req.body.collection
+  if (req.body.collections.length > 0)
+    updateObj.collections = collectionArrayFormat(req.body.collections)
   if (req.body.hostname)
     updateObj.hostname = req.body.hostname
   if (req.body.port)
@@ -74,8 +75,10 @@ exports.update = (req, res) => {
     updateObj.password = simpleCrypto.encrypt(req.body.password)
   if (req.body.schedule)
     updateObj.schedule = req.body.schedule
-  if(req.body.authenticationDatabase)
+  if (req.body.authenticationDatabase)
     updateObj.authenticationDatabase = req.body.authenticationDatabase
+  if (req.body.max_dumps)
+    updateObj.max_dumps = req.body.max_dumps
 
   let entry = Backup
     .find({id: req.params.id})
@@ -96,3 +99,13 @@ exports.delete = (req, res) => {
     .write()
   res.send(entry); // empty on error or if not exists
 };
+
+function collectionArrayFormat(array) {
+  let collectionArray = [];
+  if (array.length > 0) {
+    array.forEach(element => {
+      collectionArray.push({name: element.value})
+    })
+  }
+  return collectionArray
+}

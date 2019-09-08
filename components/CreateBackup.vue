@@ -50,11 +50,14 @@
           label-for="collection-input"
           invalid-feedback="Collection is required"
         >
-          <b-form-input
-            id="collection-input"
-            v-model="new_backup.collection"
-            required
-          ></b-form-input>
+<!--          <b-form-input-->
+<!--            id="collection-input"-->
+<!--            v-model="new_backup.collections"-->
+<!--            required-->
+<!--          ></b-form-input>-->
+          <tags-input element-id="collection-input"
+                      :add-tags-on-blur="true"
+                      v-model="new_backup.collections"></tags-input>
         </b-form-group>
         <b-form-group
           label="Auth Database"
@@ -90,6 +93,7 @@
           label-for="password-input"
         >
           <b-form-input
+            type="password"
             id="password-input"
             v-model="new_backup.password"
           ></b-form-input>
@@ -107,21 +111,23 @@
             return {
                 new_backup: {
                     database: '',
-                    collection: '',
+                    collections: [],
                     hostname: '',
                     port: '',
                     username: '', password: '',
                     schedule: '',
-                    authenticationDatabase: ''
+                    authenticationDatabase: '',
+                    max_dumps: 3
                 },
                 empty_backup: {
                     database: '',
-                    collection: '',
+                    collections: [],
                     hostname: '',
                     port: '',
                     username: '', password: '',
                     schedule: '',
-                    authenticationDatabase: ''
+                    authenticationDatabase: '',
+                    max_dumps: 3
                 }
             }
         },

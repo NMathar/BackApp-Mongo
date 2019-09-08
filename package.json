@@ -6,8 +6,8 @@
   "private": true,
   "scripts": {
     "dev": "nuxt dev",
-    "cron:start": "touch server/logs/cron.lock && forever start server/cron.js",
-    "cron:stop": "rm -f server/logs/cron.lock && forever stop server/cron.js",
+    "cron:start": "forever start server/cron.js && touch server/logs/cron.lock",
+    "cron:stop": "forever stop server/cron.js && rm -f server/logs/cron.lock",
     "cron:status": "test -f server/logs/cron.lock && printf running || printf stopped",
     "build": "nuxt build",
     "start": "nuxt start",
@@ -15,6 +15,7 @@
   },
   "dependencies": {
     "@nuxtjs/axios": "^5.6.0",
+    "@voerro/vue-tagsinput": "^2.0.2",
     "ale-mongoutils": "^1.0.2",
     "body-parser": "^1.19.0",
     "bootstrap": "^4.1.3",
