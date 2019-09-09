@@ -3,7 +3,6 @@ const Backup = require('./model/backup.js');
 const createDumpCommand = require('ale-mongoutils').createDumpCommand;
 const {exec} = require('child_process');
 const SimpleCrypto = require("simple-crypto-js").default;
-const _secretKey = "some-unique-key"; //TODO: add to config
 const simpleCrypto = new SimpleCrypto(_secretKey);
 const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
     "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
@@ -11,10 +10,11 @@ const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
 let data = Backup
     .value()
 
-const backupDir = __dirname + '/db/dumps/'
+const backupDir = __dirname + '/db/dumps/'//TODO: add to config
+const _secretKey = "some-unique-key"; //TODO: add to config
 
 // dummy schedule to let process start
-cron.schedule('*/5 * * * *', function () {
+cron.schedule('*/30 * * * *', function () {
     // console.log('Cron is running');
 });
 
