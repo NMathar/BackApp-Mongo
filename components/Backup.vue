@@ -26,6 +26,7 @@
           <h4>Dumps
             <b-badge variant="secondary">Max: {{row.item.max_dumps}}</b-badge>
           </h4>
+          <dumps :backup-id="row.item.id"></dumps>
         </b-card>
       </template>
     </b-table>
@@ -34,6 +35,7 @@
 
 <script>
     import BackupModal from "~/components/BackupModal";
+    import Dumps from "~/components/Dumps";
 
     const SimpleCrypto = require("simple-crypto-js").default;
     const _secretKey = "some-unique-key"; //TODO: add to config
@@ -42,7 +44,8 @@
     export default {
         name: "Backup",
         components: {
-            BackupModal
+            BackupModal,
+            Dumps
         },
         data() {
             return {
@@ -69,19 +72,22 @@
             async getAllBackups() {
                 this.backups = await this.$axios.$get("api/backups");
             },
-            deleteBackup(id) {
-                this.$axios.$delete("api/backups/" + id).then(res => {
-                    this.$parent.restartCron(); // restart cron to prevent still updates for the deleted server
-                    this.getAllBackups();
-                    this.$bvToast.toast(`Backup successful deleted`, {
-                        title: 'Delete',
-                        autoHideDelay: 1500,
-                        variant: 'success',
-                        solid: true,
+            async deleteBackup(id) {
+                let val = await this.$bvModal.msgBoxConfirm('Are you sure?')
+                if(val){
+                    this.$axios.$delete("api/backups/" + id).then(res => {
+                        this.$parent.restartCron(); // restart cron to prevent still updates for the deleted server
+                        this.getAllBackups();
+                        this.$bvToast.toast(`Backup successful deleted`, {
+                            title: 'Delete',
+                            autoHideDelay: 1500,
+                            variant: 'success',
+                            solid: true,
+                        })
+                    }).catch(err => {
+                        console.error(err)
                     })
-                }).catch(err => {
-                    console.error(err)
-                })
+                }
             }
         },
         mounted() {

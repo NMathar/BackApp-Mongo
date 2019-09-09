@@ -38,7 +38,7 @@ data.forEach(function (backup) {
         // console.log(commandString)
 
         commandString.forEach(command => {
-            console.log(command)
+            // console.log(command)
             exec(command, (err, stdout, stderr) => {
                 if (err) {
                     //TODO: send mail on every fail to configured address

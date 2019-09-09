@@ -30,6 +30,12 @@ app.put('/backups/:id', backup.update);
 // Delete a Note with noteId
 app.delete('/backups/:id', backup.delete);
 
+app.get('/backups/dumps/:id', backup.dumps)
+
+app.get('/download/dump/:id/:folder', backup.downloadDump)
+
+app.get('/restore/dump/:id/:folder', backup.restoreDump)
+
 
 // create mail transporter
 // let transporter = nodemailer.createTransport({
