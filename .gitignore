@@ -91,6 +91,7 @@ sw.*
 *.swp
 
 server/db/*
+server/db/dumps/*
 
 !/**/.gitkeep
 

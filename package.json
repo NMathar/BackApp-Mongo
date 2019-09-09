@@ -27,7 +27,8 @@
     "nodemailer": "^6.3.0",
     "nuxt": "^2.9.2",
     "simple-crypto-js": "^2.2.0",
-    "uuid": "^3.3.3"
+    "uuid": "^3.3.3",
+    "rimraf": "^3.0.0"
   },
   "devDependencies": {
     "nodemon": "^1.19.2"
