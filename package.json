@@ -6,9 +6,9 @@
   "private": true,
   "scripts": {
     "dev": "nuxt dev",
-    "cron:start": "forever start server/cron.js && touch server/logs/cron.lock",
-    "cron:stop": "forever stop server/cron.js && rm -f server/logs/cron.lock",
-    "cron:status": "test -f server/logs/cron.lock && printf running || printf stopped",
+    "cron:start": "forever start server/cron.js && touch server/db/cron.lock",
+    "cron:stop": "forever stop server/cron.js && rm -f server/db/cron.lock",
+    "cron:status": "test -f server/db/cron.lock && printf running || printf stopped",
     "build": "nuxt build",
     "start": "nuxt start",
     "generate": "nuxt generate"
