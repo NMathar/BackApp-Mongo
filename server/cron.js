@@ -1,3 +1,4 @@
+require('dotenv').config({ path:  __dirname + '/db/.env' })
 const cron = require("node-cron");
 const Backup = require('./model/backup.js');
 const createDumpCommand = require('ale-mongoutils').createDumpCommand;
@@ -10,7 +11,7 @@ const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
 let data = Backup
     .value()
 const backupDir = __dirname + '/db/dumps/';//TODO: add to config
-const _secretKey = "some-unique-key"; //TODO: add to config
+const _secretKey = process.env.SECRET_KEY;
 const simpleCrypto = new SimpleCrypto(_secretKey);
 
 // dummy schedule to let process start

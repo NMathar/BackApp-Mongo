@@ -38,7 +38,7 @@
     import Dumps from "~/components/Dumps";
 
     const SimpleCrypto = require("simple-crypto-js").default;
-    const _secretKey = "some-unique-key"; //TODO: add to config
+    const _secretKey = process.env.SECRET_KEY;
     const simpleCrypto = new SimpleCrypto(_secretKey);
 
     export default {
@@ -49,6 +49,7 @@
         },
         data() {
             return {
+                key: _secretKey,
                 fields: ['hostname', 'port', 'database', 'collections', 'schedule', 'username', 'authenticationDatabase',
                     {key: 'actions', label: 'Actions'}, 'show_dumps'],
                 backups: [],

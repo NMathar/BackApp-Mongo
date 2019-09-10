@@ -1,7 +1,8 @@
+require('dotenv').config({ path:  __dirname + '/../db/.env' })
 const Backup = require('../model/backup.js');
 const uuidv4 = require('uuid/v4');
 const SimpleCrypto = require("simple-crypto-js").default;
-var _secretKey = "some-unique-key"; //TODO: add to config
+const _secretKey = process.env.SECRET_KEY;
 var simpleCrypto = new SimpleCrypto(_secretKey);
 const backupDir = __dirname + '/../db/dumps/';//TODO: add to config
 const createRestoreCommand = require('ale-mongoutils').createRestoreCommand;
@@ -102,11 +103,12 @@ exports.update = (req, res) => {
 
 // Delete a note with the specified noteId in the request
 exports.delete = (req, res) => {
+    console.log(req.params.id)
     const rimraf = require('rimraf');
     let entry = Backup
         .remove({id: req.params.id})
         .write()
-    rimraf.sync(backupDir+entry.id)
+    rimraf.sync(backupDir+req.params.id)
     res.send(entry); // empty on error or if not exists
 };
 

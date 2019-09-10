@@ -45,11 +45,6 @@
           label-for="collection-input"
           invalid-feedback="Collection is required"
         >
-          <!--          <b-form-input-->
-          <!--            id="collection-input"-->
-          <!--            v-model="new_backup.collections"-->
-          <!--            required-->
-          <!--          ></b-form-input>-->
           <tags-input element-id="collection-input"
                       :add-tags-on-blur="true"
                       v-model="backupData.collections"></tags-input>
@@ -181,8 +176,10 @@
                     });
                 } else {
                     delete this.backupData.id
+                    console.log(this.backupData)
                     //send infos to the server
                     this.$axios.$post("api/backups", this.backupData).then(res => {
+                        console.log(res)
                         this.$axios.$get("api/cron/restart") // restart cron to add the new server
                         // Hide the modal manually
                         this.$parent.getAllBackups()
