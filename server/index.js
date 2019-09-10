@@ -34,6 +34,8 @@ app.get('/download/dump/:id/:folder', backup.downloadDump)
 
 app.get('/restore/dump/:id/:folder', backup.restoreDump)
 
+app.get('/db/test/:id', backup.testDBConnection)
+
 
 app.get('/cron/restart', function (req, res) {
   exec('npm run cron:restart', (err, stdout, stderr) => {

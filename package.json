@@ -27,6 +27,7 @@
     "express": "^4.17.1",
     "forever": "^1.0.0",
     "lowdb": "^1.0.0",
+    "mongodb": "^3.3.2",
     "node-cron": "^2.0.3",
     "nodemailer": "^6.3.0",
     "nuxt": "^2.9.2",

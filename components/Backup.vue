@@ -15,6 +15,7 @@
           X
         </b-button>
         <b-button size="sm" variant="primary" @click="backupEdit(row.item)">Edit</b-button>
+        <b-button size="sm" variant="info" @click="testConnection(row.item.id)">Test Connection</b-button>
       </template>
       <template v-slot:cell(show_dumps)="row">
         <b-button size="sm" @click="row.toggleDetails" class="mr-2">
@@ -57,6 +58,24 @@
             };
         },
         methods: {
+            async testConnection(id) {
+                let res = await this.$axios.$get("api/db/test/"+id);
+                if (res.connection) {
+                    this.$bvToast.toast(`Connection was successful`, {
+                        title: 'DB Connection',
+                        autoHideDelay: 1500,
+                        variant: 'success',
+                        solid: true,
+                    })
+                } else {
+                    this.$bvToast.toast(`Error: connection failed!`, {
+                        title: 'DB Connection',
+                        autoHideDelay: 1500,
+                        variant: 'danger',
+                        solid: true,
+                    })
+                }
+            },
             backupEdit(data) {
                 if (data.password && data.password.length > 0)
                     data.password = simpleCrypto.decrypt(data.password)
@@ -75,7 +94,7 @@
             },
             async deleteBackup(id) {
                 let val = await this.$bvModal.msgBoxConfirm('Are you sure?')
-                if(val){
+                if (val) {
                     this.$axios.$delete("api/backups/" + id).then(res => {
                         this.$parent.restartCron(); // restart cron to prevent still updates for the deleted server
                         this.getAllBackups();

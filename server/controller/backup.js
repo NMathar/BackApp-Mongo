@@ -1,4 +1,4 @@
-require('dotenv').config({ path:  __dirname + '/../db/.env' })
+require('dotenv').config({path: __dirname + '/../db/.env'})
 const Backup = require('../model/backup.js');
 const uuidv4 = require('uuid/v4');
 const SimpleCrypto = require("simple-crypto-js").default;
@@ -107,7 +107,7 @@ exports.delete = (req, res) => {
     let entry = Backup
         .remove({id: req.params.id})
         .write()
-    rimraf.sync(backupDir+req.params.id)
+    rimraf.sync(backupDir + req.params.id)
     res.send(entry); // empty on error or if not exists
 };
 
@@ -197,4 +197,42 @@ exports.restoreDump = (req, res) => {
         });
     }
 
+}
+
+exports.testDBConnection = async (req, res) => {
+    const MongoClient = require('mongodb').MongoClient;
+    const id = req.params.id;
+    const entry = Backup
+        .find({id: id})
+        .value()
+
+    const host = encodeURIComponent(entry.hostname)
+    const port = encodeURIComponent(entry.port)
+    const authMechanism = 'DEFAULT';
+    let authDB = ''
+    if (entry.authenticationDatabase)
+        authDB = '?authSource=' + entry.authenticationDatabase
+
+    let authString = '';
+    if (entry.user && entry.password) {
+        const user = encodeURIComponent(entry.user);
+        const password = encodeURIComponent(entry.password);
+        authString = `${user}:${password}@`
+    }
+
+// Connection URL
+    const url = `mongodb://${authString}${host}:${port}/?authMechanism=${authMechanism}` + authDB;
+    // console.log(url)
+// Create a new MongoClient
+    const client = new MongoClient(url, {useUnifiedTopology: true});
+
+// Use connect method to connect to the Server
+    client.connect(function (err) {
+        // client.close();
+        if (err === null) {
+            return res.json({connection: true})
+        } else {
+            return res.json({connection: false})
+        }
+    });
 }
