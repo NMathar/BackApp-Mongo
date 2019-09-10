@@ -103,7 +103,6 @@ exports.update = (req, res) => {
 
 // Delete a note with the specified noteId in the request
 exports.delete = (req, res) => {
-    console.log(req.params.id)
     const rimraf = require('rimraf');
     let entry = Backup
         .remove({id: req.params.id})
