@@ -92,7 +92,7 @@ sw.*
 
 server/db/*
 server/db/dumps/*
-!server/db/settings.json
+#!server/db/settings.json
 
 !/**/.gitkeep
 
