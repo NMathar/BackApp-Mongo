@@ -1,6 +1,7 @@
 <template>
   <div class="mt-4">
     <div v-for="folder in dumps">
+      <hr>
       <h5>{{folder.folder}}
         <b-btn variant="primary" size="sm" @click="dlDump(folder.folder, folder.db)">Download</b-btn>
         <b-btn variant="warning" size="sm" @click="restoreDump(folder.folder, folder.db)">Restore</b-btn>
@@ -10,7 +11,6 @@
           {{files}}
         </li>
       </ul>
-      <hr>
     </div>
   </div>
 </template>
