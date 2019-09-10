@@ -103,3 +103,4 @@ dist
 
 Dockerfile
 
+server/db/*
