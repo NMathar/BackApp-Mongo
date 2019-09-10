@@ -58,9 +58,9 @@ data.forEach(function (backup) {
                     console.log(stdout)
                 } else {
                     // console.log(stdout)
-                    // handle backup.max_dumps
-                    deleteIfMaxDumpsReached(backup.id, backup.max_dumps)
                 }
+                // handle backup.max_dumps
+                deleteIfMaxDumpsReached(backup.id, backup.max_dumps)
             });
         })
     });
