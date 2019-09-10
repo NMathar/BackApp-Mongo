@@ -176,10 +176,8 @@
                     });
                 } else {
                     delete this.backupData.id
-                    console.log(this.backupData)
                     //send infos to the server
                     this.$axios.$post("api/backups", this.backupData).then(res => {
-                        console.log(res)
                         this.$axios.$get("api/cron/restart") // restart cron to add the new server
                         // Hide the modal manually
                         this.$parent.getAllBackups()
