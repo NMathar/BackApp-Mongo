@@ -4,8 +4,6 @@ const consola = require('consola')
 // const {Nuxt, Builder} = require('nuxt')
 const {exec} = require('child_process');
 
-// let nodemailer = require("nodemailer");
-
 const app = express()
 app.use(bodyParser.json())
 
@@ -37,20 +35,10 @@ app.get('/download/dump/:id/:folder', backup.downloadDump)
 app.get('/restore/dump/:id/:folder', backup.restoreDump)
 
 
-// create mail transporter
-// let transporter = nodemailer.createTransport({
-//   service: "gmail",
-//   auth: {
-//     user: "COMPANYEMAIL@gmail.com",
-//     pass: "userpass"
-//   }
-// });
-
-
 app.get('/cron/restart', function (req, res) {
   exec('npm run cron:restart', (err, stdout, stderr) => {
-    if (stdout) {
-      res.json({success: false, message: stdout});
+    if (err) {
+      res.json({success: false, message: stderr});
     } else {
       res.json({success: true, message: "cron restart was successful"})
     }

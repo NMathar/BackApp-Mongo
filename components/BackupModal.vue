@@ -110,7 +110,6 @@
 </template>
 
 <script>
-    //TODO: validate form in frontend
     export default {
         props: {
             backupData: {

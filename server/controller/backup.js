@@ -102,9 +102,11 @@ exports.update = (req, res) => {
 
 // Delete a note with the specified noteId in the request
 exports.delete = (req, res) => {
+    const rimraf = require('rimraf');
     let entry = Backup
         .remove({id: req.params.id})
         .write()
+    rimraf.sync(backupDir+entry.id)
     res.send(entry); // empty on error or if not exists
 };
 
@@ -128,7 +130,6 @@ exports.dumps = (req, res) => {
     let dumps = [];
     folderArr.forEach(dir => {
         // console.log(backupDir+id+'/'+dir+'/'+entry.database)
-        // dumps[dir] = readdirSync(backupDir+id+'/'+dir+'/'+entry.database)
         dumps.push({folder: dir, db: entry.database, dumps: readdirSync(backupDir + id + '/' + dir + '/' + entry.database)})
     })
     res.json({dumps: dumps});

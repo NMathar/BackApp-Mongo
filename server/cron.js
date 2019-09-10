@@ -42,6 +42,16 @@ data.forEach(function (backup) {
             exec(command, (err, stdout, stderr) => {
                 if (err) {
                     //TODO: send mail on every fail to configured address
+                    // let nodemailer = require("nodemailer");
+                    // create mail transporter
+                    // let transporter = nodemailer.createTransport({
+                    //   service: "gmail",
+                    //   auth: {
+                    //     user: "COMPANYEMAIL@gmail.com",
+                    //     pass: "userpass"
+                    //   }
+                    // });
+
                     console.log(err)
                     console.log(stderr)
                     console.log(stdout)
