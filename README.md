@@ -2,7 +2,13 @@
 
 > Centralize and organize your MongoDB dumps easily
 
-## Build Setup
+## Start with docker container
+
+``` bash
+$ docker run -d -p 3000:3000 --name mongodb-backup-app nmonst4/mongodb-backup-app
+```
+
+## Build Setup for local usage
 
 ``` bash
 # install dependencies
@@ -12,11 +18,9 @@ $ npm run install
 $ npm run dev
 
 # build for production and launch server
+$ npm run generate:key
 $ npm run build
 $ npm run start
-
-# generate static project
-$ npm run generate
 ```
 
 ## Config
