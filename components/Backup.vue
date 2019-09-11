@@ -1,7 +1,7 @@
 <template>
   <div class="mt-4">
     <h4>All Backups</h4>
-    <b-button class="mb-4" v-b-modal.backup-modal>New Backup</b-button>
+    <b-button class="mb-4" v-b-modal.backup-modal @click="backupData = {}">New Backup</b-button>
     <BackupModal ref="backupModal" :backupData="backupData"/>
     <b-table striped hover :items="backups" :fields="fields">
       <template v-slot:cell(collections)="row">
