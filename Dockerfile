@@ -23,6 +23,9 @@ RUN rm server/db/.env
 # expose 3000 on container
 EXPOSE 3000
 
+# Use Volume
+VOLUME server/db
+
 # set app serving to permissive / assigned
 ENV NUXT_HOST=0.0.0.0
 # set app port

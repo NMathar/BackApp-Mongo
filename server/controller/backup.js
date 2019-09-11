@@ -29,7 +29,7 @@ exports.create = (req, res) => {
             collections: collectionArrayFormat(req.body.collections),
             hostname: req.body.hostname,
             port: req.body.port,
-            username: req.body.username, password: req.body.password ? simpleCrypto.encrypt(req.body.password) : '', //TODO: in frontend/cron -> simpleCrypto.decrypt(cipherText)
+            username: req.body.username, password: req.body.password ? simpleCrypto.encrypt(req.body.password) : '',
             schedule: req.body.schedule,
             authenticationDatabase: req.body.authenticationDatabase,
             max_dumps: req.body.max_dumps ? req.body.max_dumps : 3
