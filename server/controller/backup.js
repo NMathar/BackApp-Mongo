@@ -41,7 +41,7 @@ exports.create = (req, res) => {
         .find({id: id})
         .value()
 
-    delete entry.password;
+    // delete entry.password;
     if (entry)
         return res.send(entry);
     else
@@ -211,27 +211,28 @@ exports.testDBConnection = async (req, res) => {
     const authMechanism = 'DEFAULT';
     let authDB = ''
     if (entry.authenticationDatabase)
-        authDB = '?authSource=' + entry.authenticationDatabase
+        authDB = '&authSource=' + entry.authenticationDatabase
 
     let authString = '';
-    if (entry.user && entry.password) {
-        const user = encodeURIComponent(entry.user);
-        const password = encodeURIComponent(entry.password);
-        authString = `${user}:${password}@`
+    if (entry.username && entry.password) {
+        const username = encodeURIComponent(entry.username);
+        const password = encodeURIComponent(simpleCrypto.decrypt(entry.password));
+        authString = `${username}:${password}@`
     }
 
-// Connection URL
+    // Connection URL
     const url = `mongodb://${authString}${host}:${port}/?authMechanism=${authMechanism}` + authDB;
     // console.log(url)
-// Create a new MongoClient
+    // Create a new MongoClient
     const client = new MongoClient(url, {useUnifiedTopology: true});
 
-// Use connect method to connect to the Server
+    // Use connect method to connect to the Server
     client.connect(function (err) {
-        // client.close();
+        client.close();
         if (err === null) {
             return res.json({connection: true})
         } else {
+            console.error(err)
             return res.json({connection: false})
         }
     });
