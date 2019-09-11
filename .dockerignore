@@ -102,7 +102,3 @@ dist
 .idea
 
 Dockerfile
-
-server/db/*
-!server/db/settings.json
-!server/db/dumps

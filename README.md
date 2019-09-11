@@ -5,7 +5,7 @@
 ## Start with docker container
 
 ``` bash
-$ docker run -d -p 3000:3000 --name mongodb-backup-app nmonst4/mongodb-backup-app
+$ docker run -d -p 3000:3000  --volume=/opt/mongo-backup:/usr/src/app/server/db --name mongodb-backup-app nmonst4/mongodb-backup-app
 ```
 
 ## Build Setup for local usage

@@ -11,7 +11,7 @@ const adapter = new FileSync(settingFile)
 const db = low(adapter)
 
 // Set some defaults
-// db.defaults({backups: []})
-//   .write()
+db.defaults({backups: []})
+  .write()
 
 module.exports = db.get('backups')
