@@ -30,7 +30,7 @@ module.exports = {
     /*
      ** Plugins to load before mounting the App
      */
-    plugins: [{src: '~/plugins/tag-input', mode: 'client'}],
+    plugins: [{src: '~/plugins/tag-input', mode: 'client'}, {src: '~/plugins/axios', mode: 'client'}],
     /*
      ** Nuxt.js dev-modules
      */

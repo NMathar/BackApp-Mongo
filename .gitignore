@@ -90,10 +90,9 @@ sw.*
 # Vim swap files
 *.swp
 
+server/cron.lock
 server/db/*
 server/db/dumps/*
 #!server/db/settings.json
 
 !/**/.gitkeep
-
-
