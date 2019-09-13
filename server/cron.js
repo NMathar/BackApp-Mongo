@@ -1,9 +1,24 @@
-require('dotenv').config({ path:  __dirname + '/db/.env' })
+require('dotenv').config({path: __dirname + '/db/.env'})
 const cron = require("node-cron");
 const Backup = require('./model/backup.js');
 const createDumpCommand = require('ale-mongoutils').createDumpCommand;
 const {exec} = require('child_process');
 const SimpleCrypto = require("simple-crypto-js").default;
+const nodemailer = require("nodemailer");
+
+// create mail transporter
+let transporter = false;
+if (process.env.MAILER_URL) {
+    transporter = nodemailer.createTransport(process.env.MAILER_URL);
+}
+
+// transporter.verify(function(error, success) {
+//     if (error) {
+//         console.log(error);
+//     } else {
+//         console.log("Server is ready to take our messages");
+//     }
+// });
 
 const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
     "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
@@ -41,26 +56,33 @@ data.forEach(function (backup) {
         commandString.forEach(command => {
             // console.log(command)
             exec(command, (err, stdout, stderr) => {
+                console.log(command)
                 if (err) {
-                    //TODO: send mail on every fail to configured address
-                    // let nodemailer = require("nodemailer");
-                    // create mail transporter
-                    // let transporter = nodemailer.createTransport({
-                    //   service: "gmail",
-                    //   auth: {
-                    //     user: "COMPANYEMAIL@gmail.com",
-                    //     pass: "userpass"
-                    //   }
-                    // });
-
-                    console.log(err)
+                    //send mail on every fail to configured address
+                    if (transporter) {
+                        var message = {
+                            from: 'mongodb-backup@ima.rwth-aachen.de',
+                            to: process.env.CRON_MAIL_ADDRESS,
+                            subject: 'Cron for ' + backup.hostname + ' failed',
+                            text: 'Command that failed: \n ' + command + ' \n\n Error:\n' + stderr,
+                            html: '<p>Command that failed:</p><p>' + command + '</p><p>Error:</p><p>' + stderr + '</p>'
+                        };
+                        transporter.sendMail(message, function (err) {
+                            if (err) {
+                                console.log(err)
+                            } else {
+                                console.log('message was send!')
+                            }
+                        });
+                    }
+                    // console.log(err)
                     console.log(stderr)
-                    console.log(stdout)
+                    // console.log(stdout)
                 } else {
                     // console.log(stdout)
+                    // handle backup.max_dumps
+                    deleteIfMaxDumpsReached(backup.id, backup.max_dumps)
                 }
-                // handle backup.max_dumps
-                deleteIfMaxDumpsReached(backup.id, backup.max_dumps)
             });
         })
     });
@@ -70,16 +92,21 @@ function deleteIfMaxDumpsReached(id, max_dumps) {
     const {readdirSync, statSync} = require('fs')
     const rimraf = require('rimraf');
 
-    let folderArr = readdirSync(backupDir + id)
+    try {
+        let folderArr = readdirSync(backupDir + id)
 
-    if(folderArr.length > max_dumps){
-        let sort = folderArr.sort(function (a, b) {
-            return statSync(backupDir + id + '/' + a).mtime.getTime() - statSync(backupDir + id + '/' + b).mtime.getTime();
-        });
-        let delArray = sort.slice(0, sort.length - max_dumps)
-        // console.log(delArray)
-        delArray.forEach(folder => {
-            rimraf.sync(backupDir+id+'/'+folder)
-        });
+        if (folderArr && folderArr.length > max_dumps) {
+            let sort = folderArr.sort(function (a, b) {
+                return statSync(backupDir + id + '/' + a).mtime.getTime() - statSync(backupDir + id + '/' + b).mtime.getTime();
+            });
+            let delArray = sort.slice(0, sort.length - max_dumps)
+            // console.log(delArray)
+            delArray.forEach(folder => {
+                rimraf.sync(backupDir + id + '/' + folder)
+            });
+        }
+    } catch (e) {
+        console.log(e)
     }
+
 }

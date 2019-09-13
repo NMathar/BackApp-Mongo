@@ -25,8 +25,9 @@ $ npm run start
 
 ## Config
 
-secret_key
-dump_dir
+SECRET_KEY -> generates by: npm run generate:key
+MAILER_URL -> https://nodemailer.com/smtp/
+CRON_MAIL_ADDRESS
 
 
 For detailed explanation on how things work, check out [Nuxt.js docs](https://nuxtjs.org).
