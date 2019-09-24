@@ -55,8 +55,8 @@ data.forEach(function (backup) {
 
         commandString.forEach(command => {
             // console.log(command)
-            exec(command, (err, stdout, stderr) => {
-                console.log(command)
+            exec(command + ' --forceTableScan', (err, stdout, stderr) => {
+                // console.log(command)
                 if (err) {
                     //send mail on every fail to configured address
                     if (transporter) {
