@@ -1,6 +1,5 @@
 const express = require('express')
 const bodyParser = require('body-parser');
-const consola = require('consola')
 // const {Nuxt, Builder} = require('nuxt')
 const {exec} = require('child_process');
 
