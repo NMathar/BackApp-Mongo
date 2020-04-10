@@ -26,7 +26,7 @@ exports.create = (req, res) => {
         .push({
             id: id,
             database: req.body.database,
-            collections: collectionArrayFormat(req.body.collections),
+            collections: req.body.collections, //collectionArrayFormat(req.body.collections),
             hostname: req.body.hostname,
             port: req.body.port,
             username: req.body.username, password: req.body.password ? simpleCrypto.encrypt(req.body.password) : '',
@@ -73,7 +73,7 @@ exports.update = (req, res) => {
     if (req.body.database)
         updateObj.database = req.body.database
     if (req.body.collections && req.body.collections.length > 0)
-        updateObj.collections = collectionArrayFormat(req.body.collections)
+        updateObj.collections = req.body.collections //collectionArrayFormat(req.body.collections)
     if (req.body.hostname)
         updateObj.hostname = req.body.hostname
     if (req.body.port)
@@ -184,7 +184,7 @@ exports.restoreDump = (req, res) => {
                 authenticationDatabase: entry.authenticationDatabase ? entry.authenticationDatabase : '',
                 drop: true
             });
-        console.log(commands[0])
+        // console.log(commands[0])
         exec(commands[0], (err, stdout, stderr) => {
             if (err) {
                 // console.log(err)

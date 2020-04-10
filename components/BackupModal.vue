@@ -45,9 +45,7 @@
           label-for="collection-input"
           invalid-feedback="Collection is required"
         >
-          <tags-input element-id="collection-input"
-                      :add-tags-on-blur="true"
-                      v-model="backupData.collections"></tags-input>
+          <b-form-tags input-id="tags-basic" v-model="backupData.collections" class="mb-2"></b-form-tags>
         </b-form-group>
         <b-form-group
           label="Auth Database"
@@ -104,93 +102,71 @@
   </div>
 </template>
 
-<script>
-    export default {
-        props: {
-            backupData: {
-                type: Object,
-                default: function () {
-                    return {
-                        id: '',
-                        database: '',
-                        collections: [],
-                        hostname: '',
-                        port: '',
-                        username: '', password: '',
-                        schedule: '',
-                        authenticationDatabase: '',
-                        max_dumps: 3
-                    }
-                }
-            }
-        },
-        name: "CreateBackup",
-        data() {
-            return {
-                pw_switch: false,
-                empty_backup: {
-                    database: '',
-                    collections: [],
-                    hostname: '',
-                    port: '',
-                    username: '', password: '',
-                    schedule: '',
-                    authenticationDatabase: '',
-                    max_dumps: 3
-                }
-            }
-        },
-        computed: {
-            cleanBackupData () {
-                this.backupData = this.empty_backup
-            }
-        },
-        methods: {
-            // checkFormValidity() {
-            //     const valid = this.$refs.form.checkValidity()
-            //     this.nameState = valid ? 'valid' : 'invalid'
-            //     return valid
-            // },
-            handleOk(bvModalEvt) {
-                // Prevent modal from closing
-                bvModalEvt.preventDefault()
-                // Trigger submit handler
-                this.handleSubmit()
-            },
-            handleSubmit() {
-                // Exit when the form isn't valid
-                // if (!this.checkFormValidity()) {
-                //     return
-                // }
+<script lang="ts">
+  import axios from "axios";
+  import {Prop, Component, Vue} from "nuxt-property-decorator";
+  import {Backup} from "~/types";
 
-                if (this.backupData.id && this.backupData.id.length > 0) {
-                    this.$axios.$put("api/backups/" + this.backupData.id, this.backupData).then(res => {
-                        this.$axios.$get("api/cron/restart") // restart cron to add the new server
-                        // Hide the modal manually
-                        this.$parent.getAllBackups()
-                        this.$nextTick(() => {
-                            this.$refs.modal.hide()
-                        })
-                    }).catch(err => {
-                        console.error(err)
-                    });
-                } else {
-                    delete this.backupData.id
-                    //send infos to the server
-                    this.$axios.$post("api/backups", this.backupData).then(res => {
-                        this.$axios.$get("api/cron/restart") // restart cron to add the new server
-                        // Hide the modal manually
-                        this.$parent.getAllBackups()
-                        this.$nextTick(() => {
-                            this.$refs.modal.hide()
-                        })
-                    }).catch(err => {
-                        console.error(err)
-                    });
-                }
-            }
-        }
+  @Component({})
+  export default class extends Vue {
+    @Prop()
+    backupData!: Backup
+
+    pw_switch: boolean =  false
+    empty_backup: Backup =  {
+      database: '',
+      collections: [],
+      hostname: '',
+      port: 0,
+      username: '', password: '',
+      schedule: '',
+      authenticationDatabase: '',
+      max_dumps: 3
     }
+
+    handleOk(bvModalEvt: any) {
+      // Prevent modal from closing
+      bvModalEvt.preventDefault()
+      // Trigger submit handler
+      this.handleSubmit()
+    }
+    handleSubmit() {
+      // Exit when the form isn't valid
+      // if (!this.checkFormValidity()) {
+      //     return
+      // }
+
+      if (this.backupData.id && this.backupData.id.length > 0) {
+        axios.put("api/backups/" + this.backupData.id, this.backupData).then(res => {
+          axios.get("api/cron/restart") // restart cron to add the new server
+          // Hide the modal manually
+          // @ts-ignore
+          this.$parent.getAllBackups()
+          this.$nextTick(() => {
+            // @ts-ignore
+            this.$refs.modal.hide()
+          })
+        }).catch(err => {
+          console.error(err)
+        });
+      } else {
+        delete this.backupData.id
+        //send infos to the server
+        axios.post("api/backups", this.backupData).then(res => {
+          axios.get("api/cron/restart") // restart cron to add the new server
+          // Hide the modal manually
+          // @ts-ignore
+          this.$parent.getAllBackups()
+          this.$nextTick(() => {
+            // @ts-ignore
+            this.$refs.modal.hide()
+          })
+        }).catch(err => {
+          console.error(err)
+        });
+      }
+    }
+  }
 </script>
 
 <style scoped>

@@ -6,21 +6,21 @@
   "private": true,
   "license": "MIT",
   "scripts": {
-    "dev": "nuxt dev",
+    "dev": "nuxt-ts",
     "cron:start": "forever start server/cron.js && touch server/cron.lock",
     "cron:stop": "forever stop server/cron.js && rm -f server/cron.lock",
     "cron:restart": "forever restart server/cron.js",
     "cron:status": "test -f server/cron.lock && printf running || printf stopped",
-    "build": "nuxt build",
-    "start": "nuxt start",
-    "generate": "nuxt generate",
+    "build": "nuxt-ts build",
+    "start": "nuxt-ts start",
+    "generate": "nuxt-ts generate",
     "generate:key": "./create_key.sh",
     "prestart": "./create_key.sh"
   },
   "dependencies": {
+    "@nuxt/typescript-runtime": "^0.4.4",
     "@nuxtjs/axios": "^5.9.7",
     "@nuxtjs/dotenv": "^1.4.1",
-    "@voerro/vue-tagsinput": "^2.2.0",
     "ale-mongoutils": "^1.0.3",
     "body-parser": "^1.19.0",
     "bootstrap-vue": "^2.11.0",
@@ -31,10 +31,15 @@
     "node-cron": "^2.0.3",
     "nodemailer": "^6.4.6",
     "nuxt": "^2.12.2",
+    "nuxt-property-decorator": "^2.5.1",
     "rimraf": "^3.0.2",
     "simple-crypto-js": "^2.2.0",
     "uuid": "^7.0.3",
     "zip-a-folder": "^0.0.12"
   },
-  "devDependencies": {}
+  "devDependencies": {
+    "@nuxt/typescript-build": "^0.6.4",
+    "@nuxtjs/eslint-config-typescript": "^1.0.2",
+    "@types/crypto-js": "^3.1.44"
+  }
 }

@@ -34,86 +34,91 @@
   </div>
 </template>
 
-<script>
-    import BackupModal from "~/components/BackupModal";
-    import Dumps from "~/components/Dumps";
+<script lang="ts">
+  import {Component, Vue} from 'nuxt-property-decorator'
+  import axios from "axios";
+  import {BToast} from "bootstrap-vue"
+  import BackupModal from "~/components/BackupModal.vue";
+  import Dumps from "~/components/Dumps.vue";
+  import {Backup} from "~/types"
+  import { SimpleCrypto } from "simple-crypto-js/build/SimpleCrypto";
 
-    const SimpleCrypto = require("simple-crypto-js").default;
-    const _secretKey = process.env.SECRET_KEY;
-    const simpleCrypto = new SimpleCrypto(_secretKey);
 
-    export default {
-        name: "Backup",
-        components: {
-            BackupModal,
-            Dumps
-        },
-        data() {
-            return {
-                key: _secretKey,
-                fields: ['hostname', 'port', 'database', 'collections', 'schedule', 'username', 'authenticationDatabase',
-                    {key: 'actions', label: 'Actions'}, 'show_dumps'],
-                backups: [],
-                backupData: {}
-            };
-        },
-        methods: {
-            async testConnection(id) {
-                let res = await this.$axios.$get("api/db/test/"+id);
-                if (res.connection) {
-                    this.$bvToast.toast(`Connection was successful`, {
-                        title: 'DB Connection',
-                        autoHideDelay: 1500,
-                        variant: 'success',
-                        solid: true,
-                    })
-                } else {
-                    this.$bvToast.toast(`Error: connection failed!`, {
-                        title: 'DB Connection',
-                        autoHideDelay: 1500,
-                        variant: 'danger',
-                        solid: true,
-                    })
-                }
-            },
-            backupEdit(data) {
-                if (data.password && data.password.length > 0)
-                    data.password = simpleCrypto.decrypt(data.password)
-                // collection names to key value
-                let tagsArr = []
-                data.collections.forEach(element => {
-                    tagsArr.push({key: '', value: element.name})
-                })
-                data.collections = tagsArr
+  @Component({
+    components: {BackupModal, Dumps}
+  })
+  export default class extends Vue {
+    key: string = process.env.SECRET_KEY || ""
+    fields: string[] = ['hostname', 'port', 'database', 'collections', 'schedule', 'username', 'authenticationDatabase',
+      'actions', 'show_dumps']
+    backups: Backup[] = []
+    backupData: Backup | null = null
 
-                this.backupData = data
-                this.$bvModal.show('backup-modal')
-            },
-            async getAllBackups() {
-                this.backups = await this.$axios.$get("api/backups");
-            },
-            async deleteBackup(id) {
-                let val = await this.$bvModal.msgBoxConfirm('Are you sure?')
-                if (val) {
-                    this.$axios.$delete("api/backups/" + id).then(res => {
-                        this.$parent.restartCron(); // restart cron to prevent still updates for the deleted server
-                        this.getAllBackups();
-                        this.$bvToast.toast(`Backup successful deleted`, {
-                            title: 'Delete',
-                            autoHideDelay: 1500,
-                            variant: 'success',
-                            solid: true,
-                        })
-                    }).catch(err => {
-                        console.error(err)
-                    })
-                }
-            }
-        },
-        mounted() {
-            this.getAllBackups();
+    async testConnection(id: string) {
+      let res = await axios.get("api/db/test/" + id);
+      try {
+        if (res.status === 200) {
+          this.$bvToast.toast(`Connection was successful`, {
+            title: 'DB Connection',
+            autoHideDelay: 1500,
+            variant: 'success',
+            solid: true,
+          })
         }
-    };
+      } catch (e) {
+        this.$bvToast.toast(`Error: connection failed!`, {
+          title: 'DB Connection',
+          autoHideDelay: 1500,
+          variant: 'danger',
+          solid: true,
+        })
+      }
+    }
+
+    backupEdit(data: Backup) {
+      const simpleCrypto = new SimpleCrypto(this.key);
+      if (data.password && data.password.length > 0) data.password = simpleCrypto.decrypt(data.password).toString()
+      // collection names to key value
+      // let tagsArr: any = []
+      // data.collections.forEach(element => {
+      //   // @ts-ignore
+      //   tagsArr.push({key: '', value: element.name})
+      // })
+      // data.collections = tagsArr
+
+      this.backupData = data
+      this.$bvModal.show('backup-modal')
+    }
+
+    async getAllBackups() {
+      this.backups = await axios.get("api/backups");
+    }
+
+    async deleteBackup(id: string) {
+      let val = await this.$bvModal.msgBoxConfirm('Are you sure?')
+      if (val) {
+        axios.delete("api/backups/" + id).then(res => {
+          // @ts-ignore
+          this.$parent.restartCron(); // restart cron to prevent still updates for the deleted server
+          this.getAllBackups();
+          this.$bvToast.toast(`Backup successful deleted`, {
+            title: 'Delete',
+            autoHideDelay: 1500,
+            variant: 'success',
+            solid: true,
+          })
+        }).catch(err => {
+          console.error(err)
+        })
+      }
+    }
+
+    mounted() {
+      this.getAllBackups();
+    }
+  }
+
+
 </script>
 
 <style scoped></style>
