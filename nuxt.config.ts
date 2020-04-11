@@ -1,5 +1,6 @@
-require('dotenv').config()
-module.exports = {
+import {Configuration} from '@nuxt/types'
+
+const config: Configuration = {
   mode: "universal",
   /*
    ** Headers of the page
@@ -40,7 +41,12 @@ module.exports = {
     // Doc: https://bootstrap-vue.js.org/docs/
     "bootstrap-vue/nuxt",
     '@nuxtjs/axios',
-    ['@nuxtjs/dotenv', {path: 'server/db'}]
+    ['@nuxtjs/dotenv', {path: 'server/db'}],
+    [
+      "nuxt-express-module",
+      {expressPath: "./server", routesPath: "./server/index"}
+    ],
+
   ],
   /*
    ** Build configuration
@@ -52,15 +58,8 @@ module.exports = {
     extend(config, ctx) {
     }
   },
-  serverMiddleware: [
-    // Will register redirect-ssl npm package
-    // 'redirect-ssl',
-
-    // Will register file from project api directory to handle /api/* requires
-    // { path: '/cron/restart', handler: '~/server/index.js' },
-    '~/server/index.ts'
-  ],
   env: {
-    SECRET_KEY: process.env.SECRET_KEY
+    SECRET_KEY: process.env.SECRET_KEY || ""
   }
-};
+}
+export default config

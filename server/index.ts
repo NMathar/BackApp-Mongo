@@ -70,7 +70,4 @@ app.get('/cron/status', function (req, res) {
   });
 });
 
-module.exports = {
-  path: '/api',
-  handler: app
-}
+module.exports = app
