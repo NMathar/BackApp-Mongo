@@ -26,7 +26,7 @@
         >Stop
         </b-button>
         <b-alert
-          v-if="message.length > 0"
+          v-if="message && message.length > 0"
           v-model="message"
           variant="warning"
           dismissible

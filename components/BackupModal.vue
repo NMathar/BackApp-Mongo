@@ -6,7 +6,7 @@
       title="Create New Backup"
       @ok="handleOk"
     >
-      <form ref="form" @submit.stop.prevent="handleSubmit">
+      <form v-if="backupData" ref="form" @submit.stop.prevent="handleSubmit">
         <b-form-group
           label="Server"
           label-for="server-input"
@@ -111,7 +111,6 @@
   export default class extends Vue {
     @Prop()
     backupData!: Backup
-
     pw_switch: boolean =  false
     empty_backup: Backup =  {
       database: '',
