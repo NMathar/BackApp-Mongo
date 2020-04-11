@@ -4,7 +4,7 @@ import BackupModel from "../model/backup"
 import {v4 as uuidv4} from 'uuid';
 import Rabbit from "crypto-js/rabbit"
 import {exec} from "child_process"
-import {createRestoreCommand} from 'ale-mongoutils/src';
+import {createRestoreCommand} from '../lib/mongoutils-master/src';
 import {Backup, Dump} from "~/types";
 
 config({path: __dirname + '/../db/.env'})
