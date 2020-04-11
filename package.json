@@ -21,9 +21,13 @@
     "@nuxt/typescript-runtime": "^0.4.4",
     "@nuxtjs/axios": "^5.9.7",
     "@nuxtjs/dotenv": "^1.4.1",
+    "@types/node-cron": "^2.0.3",
+    "@types/nodemailer": "^6.4.0",
+    "@types/uuid": "^7.0.2",
     "ale-mongoutils": "^1.0.3",
     "body-parser": "^1.19.0",
     "bootstrap-vue": "^2.11.0",
+    "crypto-js": "^4.0.0",
     "express": "^4.17.1",
     "forever": "^2.0.0",
     "lowdb": "^1.0.0",
@@ -33,13 +37,13 @@
     "nuxt": "^2.12.2",
     "nuxt-property-decorator": "^2.5.1",
     "rimraf": "^3.0.2",
-    "simple-crypto-js": "^2.2.0",
     "uuid": "^7.0.3",
     "zip-a-folder": "^0.0.12"
   },
   "devDependencies": {
     "@nuxt/typescript-build": "^0.6.4",
     "@nuxtjs/eslint-config-typescript": "^1.0.2",
-    "@types/crypto-js": "^3.1.44"
+    "@types/crypto-js": "^3.1.44",
+    "@types/lowdb": "^1.0.9"
   }
 }

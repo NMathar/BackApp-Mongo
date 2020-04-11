@@ -58,7 +58,7 @@ module.exports = {
 
     // Will register file from project api directory to handle /api/* requires
     // { path: '/cron/restart', handler: '~/server/index.js' },
-    '~/server/index.js'
+    '~/server/index.ts'
   ],
   env: {
     SECRET_KEY: process.env.SECRET_KEY

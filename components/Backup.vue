@@ -41,8 +41,7 @@
   import BackupModal from "~/components/BackupModal.vue";
   import Dumps from "~/components/Dumps.vue";
   import {Backup} from "~/types"
-  import { SimpleCrypto } from "simple-crypto-js/build/SimpleCrypto";
-
+  import Rabbit from "crypto-js/rabbit"
 
   @Component({
     components: {BackupModal, Dumps}
@@ -76,8 +75,7 @@
     }
 
     backupEdit(data: Backup) {
-      const simpleCrypto = new SimpleCrypto(this.key);
-      if (data.password && data.password.length > 0) data.password = simpleCrypto.decrypt(data.password).toString()
+      if (data.password) data.password = Rabbit.decrypt(data.password, this.key).toString()
       // collection names to key value
       // let tagsArr: any = []
       // data.collections.forEach(element => {

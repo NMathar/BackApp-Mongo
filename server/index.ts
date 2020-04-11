@@ -1,16 +1,13 @@
-const express = require('express')
-const bodyParser = require('body-parser');
-// const {Nuxt, Builder} = require('nuxt')
-const {exec} = require('child_process');
+import express from "express"
+import * as bodyParser from "body-parser"
+import {exec} from "child_process"
+import backup from "./controller/backup";
 
 const app = express()
 app.use(bodyParser.json())
 
 // start cron on app startup
 exec('npm run cron:start --silent');
-
-const backup = require('./controller/backup.js');
-const Backup = require('./model/backup.js');
 
 // Create a new Note
 app.post('/backups', backup.create);
@@ -25,7 +22,7 @@ app.get('/backups/:id', backup.findOne);
 app.put('/backups/:id', backup.update);
 
 // Delete a Note with noteId
-app.delete('/backups/:id', backup.delete);
+app.delete('/backups/:id', backup.deleteR);
 
 app.get('/backups/dumps/:id', backup.dumps)
 

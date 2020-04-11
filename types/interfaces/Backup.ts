@@ -1,3 +1,5 @@
+import {WordArray} from "crypto-js";
+
 export interface Backup {
   id?: string;
   database: string;
@@ -5,7 +7,7 @@ export interface Backup {
   hostname: string;
   port: number;
   username: string;
-  password?: string;
+  password?: string | WordArray;
   schedule: string;
   authenticationDatabase: string;
   max_dumps: number;
