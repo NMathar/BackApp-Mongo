@@ -7,9 +7,9 @@
   "license": "MIT",
   "scripts": {
     "dev": "cross-env NODE_ENV=development nodemon server/index.js --watch server",
-    "cron:start": "forever start server/cron.js && touch server/cron.lock",
-    "cron:stop": "forever stop server/cron.js && rm -f server/cron.lock",
-    "cron:restart": "forever restart server/cron.js",
+    "cron:start": "forever -c ts-node start server/cron.ts && touch server/cron.lock",
+    "cron:stop": "forever -c ts-node stop server/cron.ts && rm -f server/cron.lock",
+    "cron:restart": "forever -c ts-node restart server/cron.ts",
     "cron:status": "test -f server/cron.lock && printf running || printf stopped",
     "build": "nuxt-ts build",
     "start": "cross-env NODE_ENV=production nodemon server/index.js",

@@ -11,19 +11,19 @@
         <b-button variant="warning"
                   @click="restartCron"
                   :disabled="cron_status === 'stopped'"
-        >Restart
+        ><b-icon icon="arrow-repeat" /> Restart
         </b-button>
         <b-button
           variant="success"
           @click="startCron"
           :disabled="cron_status === 'running'"
-        >Start
+        ><b-icon icon="play-fill" /> Start
         </b-button>
         <b-button
           variant="danger"
           @click="stopCron"
           :disabled="cron_status === 'stopped'"
-        >Stop
+        ><b-icon icon="stop-fill" /> Stop
         </b-button>
         <b-alert
           v-if="message && message.length > 0"
@@ -44,44 +44,45 @@
   import {Component, Vue} from 'nuxt-property-decorator'
   import axios from "axios";
   import Backup from "~/components/Backup.vue";
+  import {BIcon, BIconArrowRepeat, BIconStopFill, BIconPlayFill} from 'bootstrap-vue'
 
   @Component({
-    components: {Backup}
+    components: {Backup, BIcon, BIconArrowRepeat, BIconStopFill, BIconPlayFill}
   })
   export default class extends Vue {
     key: string = process.env.SECRET_KEY || ""
     message: string | null = null
-    cron_status: string = "running"
+    cron_status: string = "waiting"
 
     async getCronStatus() {
-      const {status} = await axios.get("api/cron/status");
-      this.cron_status = status;
+      const {data} = await axios.get("api/cron/status");
+      this.cron_status = data.status;
     }
 
     async restartCron() {
-      const {success, message} = await axios.get("api/cron/restart");
-      if (success) {
+      const {data} = await axios.get("api/cron/restart");
+      if (data.success) {
         this.getCronStatus();
       } else {
-        this.message = message;
+        this.message = data.message;
       }
     }
 
     async startCron() {
-      const {success, message} = await axios.get("api/cron/start");
-      if (success) {
+      const {data} = await axios.get("api/cron/start");
+      if (data.success) {
         this.getCronStatus();
       } else {
-        this.message = message;
+        this.message = data.message;
       }
     }
 
     async stopCron() {
-      const {success, message} = await axios.get("api/cron/stop");
-      if (success) {
+      const {data} = await axios.get("api/cron/stop");
+      if (data.success) {
         this.getCronStatus();
       } else {
-        this.message = message;
+        this.message = data.message;
       }
     }
 

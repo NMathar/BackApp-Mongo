@@ -1,7 +1,10 @@
 <template>
   <div class="mt-4">
     <h4>All Backups</h4>
-    <b-button class="mb-4" v-b-modal.backup-modal @click="backupData = {}">New Backup</b-button>
+    <b-button class="mb-4" v-b-modal.backup-modal @click="backupData = empty_backup">
+      <b-icon icon="plus"/>
+      New Backup
+    </b-button>
     <BackupModal ref="backupModal" :backupData="backupData"/>
     <b-table striped hover :items="backups" :fields="fields">
       <template v-slot:cell(collections)="row">
@@ -36,6 +39,7 @@
 
 <script lang="ts">
   import {Component, Vue} from 'nuxt-property-decorator'
+  import {BIcon, BIconPlus} from 'bootstrap-vue'
   import axios from "axios";
   import {BToast} from "bootstrap-vue"
   import BackupModal from "~/components/BackupModal.vue";
@@ -44,7 +48,7 @@
   import Rabbit from "crypto-js/rabbit"
 
   @Component({
-    components: {BackupModal, Dumps}
+    components: {BackupModal, Dumps, BIcon, BIconPlus}
   })
   export default class extends Vue {
     key: string = process.env.SECRET_KEY || ""
@@ -52,6 +56,16 @@
       'actions', 'show_dumps']
     backups: Backup[] = []
     backupData: Backup | null = null
+    empty_backup: Backup = {
+      database: '',
+      collections: [],
+      hostname: '',
+      port: 0,
+      username: '', password: '',
+      schedule: '',
+      authenticationDatabase: '',
+      max_dumps: 3
+    }
 
     async testConnection(id: string) {
       let res = await axios.get("api/db/test/" + id);

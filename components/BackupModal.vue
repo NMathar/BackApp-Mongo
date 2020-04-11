@@ -112,16 +112,6 @@
     @Prop()
     backupData!: Backup
     pw_switch: boolean =  false
-    empty_backup: Backup =  {
-      database: '',
-      collections: [],
-      hostname: '',
-      port: 0,
-      username: '', password: '',
-      schedule: '',
-      authenticationDatabase: '',
-      max_dumps: 3
-    }
 
     handleOk(bvModalEvt: any) {
       // Prevent modal from closing
