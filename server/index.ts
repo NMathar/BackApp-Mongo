@@ -1,16 +1,31 @@
+import {config} from "dotenv"
 import express from "express"
 import * as bodyParser from "body-parser"
 import {exec} from "child_process"
 import backup from "./controller/backup";
 
+config()
 const {loadNuxt, build} = require("nuxt")
-
 const app = express()
 app.use(bodyParser.json())
 
 const isDev = process.env.NODE_ENV !== "production"
 const port = process.env.PORT || 3000
 const route = "/api"
+
+// set / get env vars
+if (!process.env.SECRET_KEY || process.env.SECRET_KEY.length <= 0) {
+  throw new Error("Please set a SECRET_KEY value in your Environment Variables")
+}
+if (!process.env.BASE_URL || process.env.BASE_URL.length <= 0) {
+  process.env.BASE_URL = "http://localhost:3000/"
+}
+if (!process.env.ADMIN_PASSWORD || process.env.ADMIN_PASSWORD.length <= 0) {
+  process.env.ADMIN_PASSWORD = "admin" // please change the password
+}
+// if (!process.env.BACKUP_DIR || process.env.BACKUP_DIR.length <= 0) {
+//   process.env.BACKUP_DIR = "db/dump"
+// }
 
 // start cron on app startup
 exec('npm run cron:start --silent');

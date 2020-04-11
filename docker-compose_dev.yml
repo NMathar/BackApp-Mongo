@@ -1,0 +1,51 @@
+version: '3.1'
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+
+  mongodb-primary:
+    image: 'bitnami/mongodb:4.0'
+    ports:
+      - "2701:27017"
+    environment:
+      - MONGODB_ADVERTISED_HOSTNAME=mongodb-primary
+      - MONGODB_REPLICA_SET_MODE=primary
+      - MONGODB_ROOT_PASSWORD=root
+      - MONGODB_REPLICA_SET_KEY=replicaset0
+    volumes:
+      - 'mongodb_master_data:/bitnami'
+
+  mongodb-secondary:
+      image: 'bitnami/mongodb:4.0'
+      ports:
+        - "2702:27017"
+      depends_on:
+        - mongodb-primary
+      environment:
+        - MONGODB_ADVERTISED_HOSTNAME=mongodb-secondary
+        - MONGODB_REPLICA_SET_MODE=secondary
+        - MONGODB_PRIMARY_HOST=mongodb-primary
+        - MONGODB_PRIMARY_ROOT_PASSWORD=root
+        - MONGODB_REPLICA_SET_KEY=replicaset0
+
+  mongodb-arbiter:
+      image: 'bitnami/mongodb:4.0'
+      ports:
+        - "2703:27017"
+      depends_on:
+        - mongodb-primary
+      environment:
+        - MONGODB_ADVERTISED_HOSTNAME=mongodb-arbiter
+        - MONGODB_REPLICA_SET_MODE=arbiter
+        - MONGODB_PRIMARY_HOST=mongodb-primary
+        - MONGODB_PRIMARY_ROOT_PASSWORD=root
+        - MONGODB_REPLICA_SET_KEY=replicaset0
+
+volumes:
+  mongodb_master_data:
+    driver: local

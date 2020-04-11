@@ -46,6 +46,7 @@
   import Dumps from "~/components/Dumps.vue";
   import {Backup} from "~/types"
   import Rabbit from "crypto-js/rabbit"
+  import ENC from "crypto-js/enc-utf8"
 
   @Component({
     components: {BackupModal, Dumps, BIcon, BIconPlus}
@@ -59,8 +60,7 @@
     empty_backup: Backup = {
       database: '',
       collections: [],
-      hostname: '',
-      port: 0,
+      hostname: '', port: 0,
       username: '', password: '',
       schedule: '',
       authenticationDatabase: '',
@@ -68,13 +68,20 @@
     }
 
     async testConnection(id: string) {
-      let res = await axios.get("api/db/test/" + id);
+      const {data} = await axios.get("api/db/test/" + id);
       try {
-        if (res.status === 200) {
+        if (data.connection) {
           this.$bvToast.toast(`Connection was successful`, {
             title: 'DB Connection',
             autoHideDelay: 1500,
             variant: 'success',
+            solid: true,
+          })
+        }else{
+          this.$bvToast.toast(`Error: connection failed!`, {
+            title: 'DB Connection',
+            autoHideDelay: 1500,
+            variant: 'danger',
             solid: true,
           })
         }
@@ -89,7 +96,7 @@
     }
 
     backupEdit(data: Backup) {
-      if (data.password) data.password = Rabbit.decrypt(data.password, this.key).toString()
+      if (data.password) data.password = Rabbit.decrypt(data.password, this.key).toString(ENC)
       // collection names to key value
       // let tagsArr: any = []
       // data.collections.forEach(element => {
@@ -103,7 +110,8 @@
     }
 
     async getAllBackups() {
-      this.backups = await axios.get("api/backups");
+      const {data} = await axios.get("api/backups");
+      this.backups = data
     }
 
     async deleteBackup(id: string) {

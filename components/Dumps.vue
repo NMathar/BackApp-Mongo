@@ -17,14 +17,17 @@
 
 <script lang="ts">
   import axios from "axios";
-  import {Prop, Component, Vue} from "nuxt-property-decorator";
+  import {Prop, Component, Vue, Watch} from "nuxt-property-decorator";
   import {Dump} from "~/types";
 
   @Component({})
   export default class extends Vue {
     @Prop()
     backupId!: string
-
+    @Watch('backupId')
+    onIdChange(val: string, oldVal: string) {
+      console.log(val)
+    }
     dumps: Dump[] = []
 
     async restoreDump(folder: string) {
@@ -78,8 +81,8 @@
     }
 
     async getDumps() {
-      const {dumps} = await axios.get("api/backups/dumps/" + this.backupId);
-      this.dumps = dumps;
+      const {data} = await axios.get("api/backups/dumps/" + this.backupId);
+      this.dumps = data.dumps;
     }
 
     mounted() {

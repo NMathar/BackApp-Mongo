@@ -1,5 +1,5 @@
 #!/bin/sh
-FILE=server/db/.env
+FILE=./.env
 if [ ! -f "$FILE" ]; then
     string1=$(echo SECRET_KEY=)
     string2=$(cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w ${1:-32} | head -n 1)

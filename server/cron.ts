@@ -6,13 +6,15 @@ import {exec} from "child_process"
 import {createTransport,} from "nodemailer"
 import Mail from "nodemailer/lib/mailer";
 import Rabbit from "crypto-js/rabbit"
+import ENC from "crypto-js/enc-utf8";
+import {Credentials} from "~/server/lib/mongoutils-master/src/Credentials.interface";
 
-config({path: __dirname + '/db/.env'})
+config()
 
 
 // create mail transporter
-let transporter : Mail | null = null
-if (process.env.MAILER_URL) {
+let transporter: Mail | null = null
+if (process.env.MAILER_URL && process.env.MAILER_URL.length > 0) {
   transporter = createTransport(process.env.MAILER_URL);
 }
 
@@ -45,29 +47,30 @@ data.forEach(function (backup) {
     let d = new Date();
     // console.log('./db/dumps/' + backup.database + '_' + d.getDate()+ d.getMonth()+d.getFullYear()+'.dump')
 
-    let options: any = {
+    let options: Credentials = {
       database: backup.database,
       host: backup.hostname + ':' + backup.port,
       dist: backupDir + backup.id + '/' + d.getDate() + monthNames[d.getMonth()] + d.getFullYear() + '_' + d.getHours() + d.getMinutes(),
       username: backup.username ? backup.username : '',
-      collections: backup.collections.length > 0 ? backup.collections : [],
+      collections: backup.collections.length > 0 ? collectionArrayFormat(backup.collections) : [],
       authenticationDatabase: backup.authenticationDatabase ? backup.authenticationDatabase : '',
     }
     if (backup.password) {
-      options.password = Rabbit.decrypt(backup.password, _secretKey)
+      options.password = Rabbit.decrypt(backup.password, _secretKey).toString(ENC)
     }
+    console.log(options)
     let commandString = createDumpCommand(options);
-    // console.log(commandString)
+    console.log(commandString)
 
     commandString.forEach(command => {
       // console.log(command)
       exec(command + ' --forceTableScan', (err, stdout, stderr) => {
-        // console.log(command)
+        console.log(command)
         if (err) {
           //send mail on every fail to configured address
           if (transporter) {
             let message = {
-              from: 'mongodb-backup@ima.rwth-aachen.de',
+              from: 'mongodb-backup@noreply.com',
               to: process.env.CRON_MAIL_ADDRESS,
               subject: 'Cron for ' + backup.hostname + ' failed',
               text: 'Command that failed: \n ' + command + ' \n\n Error:\n' + stderr,
@@ -93,6 +96,16 @@ data.forEach(function (backup) {
     })
   });
 });
+
+function collectionArrayFormat(array: string[]) {
+  let collectionArray: Array<{ name: string, query?: string }> = [];
+  if (array && array.length > 0) {
+    array.forEach((element: any) => {
+      collectionArray.push({name: element.value})
+    })
+  }
+  return collectionArray
+}
 
 function deleteIfMaxDumpsReached(id: string, max_dumps: number) {
   const {readdirSync, statSync} = require('fs')

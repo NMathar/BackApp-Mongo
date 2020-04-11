@@ -1,49 +1,56 @@
 import {Request, Response} from "express";
-import {config} from "dotenv"
 import BackupModel from "../model/backup"
 import {v4 as uuidv4} from 'uuid';
 import Rabbit from "crypto-js/rabbit"
+import ENC from "crypto-js/enc-utf8"
 import {exec} from "child_process"
 import {createRestoreCommand} from '../lib/mongoutils-master/src';
 import {Backup, Dump} from "~/types";
+import {config} from "dotenv"
+config()
 
-config({path: __dirname + '/../db/.env'})
 const _secretKey = process.env.SECRET_KEY || "";
 const backupDir = __dirname + '/../db/dumps/';//TODO: add to config
 
 // Create and Save a new Note
 const create = (req: Request, res: Response) => {
+  const {hostname, database, port, schedule, max_dumps, collections, username, password, authenticationDatabase} = req.body
 // Validate request
-  if (!req.body.hostname || !req.body.database || !req.body.port || !req.body.schedule) {
+  if (!hostname || !database || !port || !schedule) {
     return res.status(400).send({
       message: "Infos are not complete"
     });
   }
-  if (req.body.max_dumps < 0) {
+  if (max_dumps < 0) {
     return res.status(400).send({
       message: "Infos are not correct"
     });
   }
   let id = uuidv4();
+
+  let pushData: Backup = {
+    id,
+    database,
+    collections, //collectionArrayFormat(req.body.collections),
+    hostname,
+    port,
+    username,
+    schedule,
+    authenticationDatabase,
+    max_dumps
+  }
+  if (password && password.length > 0) {
+    pushData.password = Rabbit.encrypt(req.body.password, _secretKey).toString();
+  }
+
   BackupModel
-    .push({
-      id: id,
-      database: req.body.database,
-      collections: req.body.collections, //collectionArrayFormat(req.body.collections),
-      hostname: req.body.hostname,
-      port: req.body.port,
-      username: req.body.username, password: req.body.password ? Rabbit.encrypt(req.body.password, _secretKey) : '',
-      schedule: req.body.schedule,
-      authenticationDatabase: req.body.authenticationDatabase,
-      max_dumps: req.body.max_dumps ? req.body.max_dumps : 3
-    })
+    .push(pushData)
     .write()
 
   const entry = BackupModel
     .find({id: id})
     .value()
 
-  // delete entry.password;
   if (entry)
     return res.send(entry);
   else
@@ -70,19 +77,22 @@ const findOne = (req: Request, res: Response) => {
 
 // Update a note identified by the noteId in the request
 const update = (req: Request, res: Response) => {
-
+  const {hostname, database, port, schedule, max_dumps, collections, username, password, authenticationDatabase} = req.body
   let updateObj: Backup = {
-    database: req.body.database ? req.body.database : "",
-    collections: req.body.collections && req.body.collections.length > 0 ? req.body.collections : [],
-    hostname: req.body.hostname ? req.body.hostname : "",
-    port: req.body.port ? req.body.port : "",
-    username: req.body.username ? req.body.username : "",
-    schedule: req.body.schedule ? req.body.schedule : "",
-    authenticationDatabase: req.body.authenticationDatabase ? req.body.authenticationDatabase : "",
-    max_dumps: req.body.max_dumps && req.body.max_dumps > 0 ? req.body.max_dumps : 1
+    id: req.params.id,
+    database,
+    collections, //collectionArrayFormat(req.body.collections),
+    hostname,
+    port,
+    username,
+    schedule,
+    authenticationDatabase,
+    max_dumps
   }
-  if (req.body.password)
-    updateObj.password = Rabbit.encrypt(req.body.password, _secretKey)
+
+  if (password && password.length > 0) {
+    updateObj.password = Rabbit.encrypt(password, _secretKey).toString();
+  }
 
   let entry = BackupModel
     .find({id: req.params.id})
@@ -119,16 +129,25 @@ const deleteR = (req: Request, res: Response) => {
 const dumps = (req: Request, res: Response) => {
   const {readdirSync} = require('fs')
   const id = req.params.id;
-  const entry = BackupModel
-    .find({id: id})
-    .value()
-  let folderArr = readdirSync(backupDir + id)
-  let dumps: Dump[] = [];
-  folderArr.forEach((dir: string) => {
-    // console.log(backupDir+id+'/'+dir+'/'+entry.database)
-    dumps.push({folder: dir, db: entry.database, dumps: readdirSync(backupDir + id + '/' + dir + '/' + entry.database)})
-  })
-  res.json({dumps: dumps});
+  try {
+    const entry = BackupModel
+      .find({id: id})
+      .value()
+    let folderArr = readdirSync(backupDir + id)
+    let dumps: Dump[] = [];
+    console.log(folderArr)
+    folderArr.forEach((dir: string) => {
+      // console.log(backupDir+id+'/'+dir+'/'+entry.database)
+      dumps.push({
+        folder: dir,
+        db: entry.database,
+        dumps: readdirSync(backupDir + id + '/' + dir + '/' + entry.database)
+      })
+    })
+    res.json({dumps: dumps});
+  } catch (e) {
+    res.json({dumps: []});
+  }
 }
 
 
@@ -178,7 +197,7 @@ const restoreDump = (req: Request, res: Response) => {
       drop: true
     }
     if (entry.password) {
-      options.password = Rabbit.decrypt(entry.password, _secretKey)
+      options.password = Rabbit.decrypt(entry.password, _secretKey).toString(ENC)
     }
     let commands = createRestoreCommand(
       options
@@ -213,10 +232,10 @@ const testDBConnection = async (req: Request, res: Response) => {
     authDB = '&authSource=' + entry.authenticationDatabase
 
   let authString = '';
-  if (entry.username && entry.password) {
+  if (entry.username && entry.username.length > 0 && entry.password) {
     const username = encodeURIComponent(entry.username);
     // @ts-ignore
-    const password = encodeURIComponent(Rabbit.decrypt(entry.password, _secretKey));
+    const password = encodeURIComponent(Rabbit.decrypt(entry.password, _secretKey).toString(ENC));
     authString = `${username}:${password}@`
   }
 
