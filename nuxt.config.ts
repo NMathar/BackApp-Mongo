@@ -41,12 +41,7 @@ const config: Configuration = {
     // Doc: https://bootstrap-vue.js.org/docs/
     "bootstrap-vue/nuxt",
     '@nuxtjs/axios',
-    ['@nuxtjs/dotenv', {path: 'server/db'}],
-    [
-      "nuxt-express-module",
-      {expressPath: "./server", routesPath: "./server/index"}
-    ],
-
+    ['@nuxtjs/dotenv', {path: 'server/db'}]
   ],
   /*
    ** Build configuration

@@ -3,8 +3,13 @@ import * as bodyParser from "body-parser"
 import {exec} from "child_process"
 import backup from "./controller/backup";
 
+const {loadNuxt, build} = require("nuxt")
+
 const app = express()
 app.use(bodyParser.json())
+
+const isDev = process.env.NODE_ENV !== "production"
+const port = process.env.PORT || 3000
 
 // start cron on app startup
 exec('npm run cron:start --silent');
@@ -70,4 +75,22 @@ app.get('/cron/status', function (req, res) {
   });
 });
 
-module.exports = app
+
+const server = (async () => {
+  // We get Nuxt instance
+  const nuxt = await loadNuxt(isDev ? "dev" : "start")
+
+// Render every route with Nuxt.js
+  app.use(nuxt.render)
+
+// Build only in dev mode with hot-reloading
+  if (isDev) {
+    build(nuxt)
+  }
+// Listen the server
+  app.listen(port, () => {
+    console.log(`server started at http://localhost:${port}`)
+  })
+})()
+export default server
+
