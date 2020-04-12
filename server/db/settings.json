@@ -1,16 +1,3 @@
 {
-  "backups": [
-    {
-      "id": "d7a49a0a-365f-4dee-b483-5096a4cf8f2e",
-      "database": "test",
-      "collections": [],
-      "hostname": "localhost",
-      "port": "2701",
-      "username": "root",
-      "schedule": "* * * * *",
-      "authenticationDatabase": "admin",
-      "max_dumps": 3,
-      "password": "U2FsdGVkX19WKkFV5w16bjCF/50="
-    }
-  ]
+  "backups": []
 }
