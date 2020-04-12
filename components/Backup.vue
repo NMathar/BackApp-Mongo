@@ -9,20 +9,23 @@
     <b-table striped hover :items="backups" :fields="fields">
       <template v-slot:cell(collections)="row">
         <div v-for="item in row.item.collections">
-          <b-badge variant="info">{{ item.name }}</b-badge>
+          <b-badge variant="info" aria-hidden="true">{{ item }}</b-badge>
           <br>
         </div>
       </template>
       <template v-slot:cell(actions)="row">
         <b-button size="sm" variant="danger" @click="deleteBackup(row.item.id)" class="mr-1">
-          X
+          <b-icon icon="trash-fill" aria-hidden="true"></b-icon>
         </b-button>
-        <b-button size="sm" variant="primary" @click="backupEdit(row.item)">Edit</b-button>
+        <b-button size="sm" variant="primary" @click="backupEdit(row.item)">
+          <b-icon icon="pencil" aria-hidden="true"></b-icon>
+        </b-button>
         <b-button size="sm" variant="info" @click="testConnection(row.item.id)">Test Connection</b-button>
       </template>
       <template v-slot:cell(show_dumps)="row">
         <b-button size="sm" @click="row.toggleDetails" class="mr-2">
-          {{ row.detailsShowing ? 'Hide' : 'Show'}} Dumps
+          Dumps
+          <b-icon :icon="row.detailsShowing ? 'caret-down-fill' : 'caret-left-fill'" aria-hidden="true" />
         </b-button>
       </template>
       <template v-slot:row-details="row">
@@ -39,7 +42,7 @@
 
 <script lang="ts">
   import {Component, Vue} from 'nuxt-property-decorator'
-  import {BIcon, BIconPlus} from 'bootstrap-vue'
+  import {BIcon, BIconPlus, BIconTrashFill, BIconPencil, BIconCaretLeftFill, BIconCaretDownFill} from 'bootstrap-vue'
   import axios from "axios";
   import {BToast} from "bootstrap-vue"
   import BackupModal from "~/components/BackupModal.vue";
@@ -49,7 +52,16 @@
   import ENC from "crypto-js/enc-utf8"
 
   @Component({
-    components: {BackupModal, Dumps, BIcon, BIconPlus}
+    components: {
+      BackupModal,
+      Dumps,
+      BIcon,
+      BIconPlus,
+      BIconTrashFill,
+      BIconPencil,
+      BIconCaretLeftFill,
+      BIconCaretDownFill
+    }
   })
   export default class extends Vue {
     key: string = process.env.SECRET_KEY || ""
@@ -77,7 +89,7 @@
             variant: 'success',
             solid: true,
           })
-        }else{
+        } else {
           this.$bvToast.toast(`Error: connection failed!`, {
             title: 'DB Connection',
             autoHideDelay: 1500,
