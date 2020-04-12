@@ -60,14 +60,14 @@ data.forEach(function (backup) {
     if (backup.password) {
       options.password = Rabbit.decrypt(backup.password, _secretKey).toString(ENC)
     }
-    console.log(options)
+    // console.log(options)
     let commandString = createDumpCommand(options);
-    console.log(commandString)
+    // console.log(commandString)
 
     commandString.forEach(command => {
       // console.log(command)
       exec(command + ' --forceTableScan', (err, stdout, stderr) => {
-        console.log(command)
+        // console.log(command)
         if (err) {
           //send mail on every fail to configured address
           if (transporter) {
