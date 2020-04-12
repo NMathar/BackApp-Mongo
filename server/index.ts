@@ -28,7 +28,9 @@ if (!process.env.ADMIN_PASSWORD || process.env.ADMIN_PASSWORD.length <= 0) {
 // }
 
 // start cron on app startup
-exec('npm run cron:start --silent');
+if(!isDev){ // start only in production to prevent to many cron processes
+  exec('npm run cron:start --silent');
+}
 
 // Create a new Note
 app.post(route + '/backups', backup.create);
