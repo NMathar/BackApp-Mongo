@@ -17,8 +17,6 @@ RUN npm install --no-audit
 # Create fake SECRET_KEY for build
 RUN npm run generate:key
 RUN npm run build
-# Remove fake key
-RUN rm server/db/.env
 
 # expose 3000 on container
 EXPOSE 3000
