@@ -8,30 +8,28 @@
         <h4 class="title">Cron Status:
           <b-badge :variant="cron_status === 'running' ? 'success' : 'danger'">{{ cron_status }}</b-badge>
         </h4>
-
         <b-button variant="warning"
                   @click="restartCron"
                   :disabled="cron_status === 'stopped'"
-        >Restart
+        ><b-icon icon="arrow-repeat" /> Restart
         </b-button>
         <b-button
-                variant="success"
-                @click="startCron"
-                :disabled="cron_status === 'running'"
-        >Start
-        </b-button
-        >
+          variant="success"
+          @click="startCron"
+          :disabled="cron_status === 'running'"
+        ><b-icon icon="play-fill" /> Start
+        </b-button>
         <b-button
-                variant="danger"
-                @click="stopCron"
-                :disabled="cron_status === 'stopped'"
-        >Stop
+          variant="danger"
+          @click="stopCron"
+          :disabled="cron_status === 'stopped'"
+        ><b-icon icon="stop-fill" /> Stop
         </b-button>
         <b-alert
-                v-if="message.length > 0"
-                v-model="message"
-                variant="warning"
-                dismissible
+          v-if="message && message.length > 0"
+          v-model="message"
+          variant="warning"
+          dismissible
         >
 
           {{ message }}
@@ -42,54 +40,56 @@
   </div>
 </template>
 
-<script>
-    import Backup from "~/components/Backup";
-    const _secretKey = process.env.SECRET_KEY;
-    export default {
-        components: {
-            Backup
-        },
-        data() {
-            return {
-                key: _secretKey,
-                message: "",
-                cron_status: "running"
-            };
-        },
-        methods: {
-            async getCronStatus() {
-                const {status} = await this.$axios.$get("api/cron/status");
-                this.cron_status = status;
-            },
-            async restartCron() {
-                const {success, message} = await this.$axios.$get("api/cron/restart");
-                if (success) {
-                    this.getCronStatus();
-                } else {
-                    this.message = message;
-                }
-            },
-            async startCron() {
-                const {success, message} = await this.$axios.$get("api/cron/start");
-                if (success) {
-                    this.getCronStatus();
-                } else {
-                    this.message = message;
-                }
-            },
-            async stopCron() {
-                const {success, message} = await this.$axios.$get("api/cron/stop");
-                if (success) {
-                    this.getCronStatus();
-                } else {
-                    this.message = message;
-                }
-            }
-        },
-        mounted() {
-            this.getCronStatus();
-        }
-    };
+<script lang="ts">
+  import {Component, Vue} from 'nuxt-property-decorator'
+  import axios from "axios";
+  import Backup from "~/components/Backup.vue";
+  import {BIcon, BIconArrowRepeat, BIconStopFill, BIconPlayFill} from 'bootstrap-vue'
+
+  @Component({
+    components: {Backup, BIcon, BIconArrowRepeat, BIconStopFill, BIconPlayFill}
+  })
+  export default class extends Vue {
+    key: string = process.env.SECRET_KEY || ""
+    message: string | null = null
+    cron_status: string = "waiting"
+
+    async getCronStatus() {
+      const {data} = await axios.get("api/cron/status");
+      this.cron_status = data.status;
+    }
+
+    async restartCron() {
+      const {data} = await axios.get("api/cron/restart");
+      if (data.success) {
+        this.getCronStatus();
+      } else {
+        this.message = data.message;
+      }
+    }
+
+    async startCron() {
+      const {data} = await axios.get("api/cron/start");
+      if (data.success) {
+        this.getCronStatus();
+      } else {
+        this.message = data.message;
+      }
+    }
+
+    async stopCron() {
+      const {data} = await axios.get("api/cron/stop");
+      if (data.success) {
+        this.getCronStatus();
+      } else {
+        this.message = data.message;
+      }
+    }
+
+    mounted() {
+      this.getCronStatus();
+    }
+  }
 </script>
 
 <style></style>

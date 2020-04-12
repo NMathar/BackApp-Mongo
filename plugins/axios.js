@@ -1,3 +1,4 @@
+// TODO: check if its working in typescirpt
 export default function({ $axios }) {
     if (process.client) {
         const protocol = window.location.protocol
