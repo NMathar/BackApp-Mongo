@@ -52,8 +52,10 @@ data.forEach(function (backup) {
       host: backup.hostname + ':' + backup.port,
       dist: backupDir + backup.id + '/' + d.getDate() + monthNames[d.getMonth()] + d.getFullYear() + '_' + d.getHours() + d.getMinutes(),
       username: backup.username ? backup.username : '',
-      collections: backup.collections.length > 0 ? collectionArrayFormat(backup.collections) : [],
       authenticationDatabase: backup.authenticationDatabase ? backup.authenticationDatabase : '',
+    }
+    if(backup.collections.length > 0){
+      options.collections = collectionArrayFormat(backup.collections)
     }
     if (backup.password) {
       options.password = Rabbit.decrypt(backup.password, _secretKey).toString(ENC)
@@ -101,7 +103,7 @@ function collectionArrayFormat(array: string[]) {
   let collectionArray: Array<{ name: string, query?: string }> = [];
   if (array && array.length > 0) {
     array.forEach((element: any) => {
-      collectionArray.push({name: element.value})
+      collectionArray.push({name: element})
     })
   }
   return collectionArray
