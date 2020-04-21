@@ -42,7 +42,6 @@
 
 <script lang="ts">
   import {Component, Vue} from 'nuxt-property-decorator'
-  import axios from "axios";
   import Backup from "~/components/Backup.vue";
   import {BIcon, BIconArrowRepeat, BIconStopFill, BIconPlayFill} from 'bootstrap-vue'
 
@@ -55,32 +54,32 @@
     cron_status: string = "waiting"
 
     async getCronStatus() {
-      const {data} = await axios.get("api/cron/status");
+      const data = await this.$axios.$get("/api/cron/status");
       this.cron_status = data.status;
     }
 
     async restartCron() {
-      const {data} = await axios.get("api/cron/restart");
+      const data = await this.$axios.$get("/api/cron/restart");
       if (data.success) {
-        this.getCronStatus();
+        await this.getCronStatus();
       } else {
         this.message = data.message;
       }
     }
 
     async startCron() {
-      const {data} = await axios.get("api/cron/start");
+      const data = await this.$axios.$get("/api/cron/start");
       if (data.success) {
-        this.getCronStatus();
+        await this.getCronStatus();
       } else {
         this.message = data.message;
       }
     }
 
     async stopCron() {
-      const {data} = await axios.get("api/cron/stop");
+      const data = await this.$axios.$get("/api/cron/stop");
       if (data.success) {
-        this.getCronStatus();
+        await this.getCronStatus();
       } else {
         this.message = data.message;
       }

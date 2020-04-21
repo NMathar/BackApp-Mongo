@@ -16,7 +16,6 @@
 </template>
 
 <script lang="ts">
-  import axios from "axios";
   import {Prop, Component, Vue, Watch} from "nuxt-property-decorator";
   import {Dump} from "~/types";
 
@@ -34,7 +33,7 @@
       let val = await this.$bvModal.msgBoxConfirm('Are you sure?')
       if (val) {
         try {
-          const {data} = await axios.get("api/restore/dump/" + this.backupId + '/' + folder)
+          const data = await this.$axios.$get("/api/restore/dump/" + this.backupId + '/' + folder)
           if (!data.success) {
             this.$bvToast.toast(data.message, {
               title: 'Restore Error',
@@ -62,7 +61,7 @@
     }
 
     async dlDump(folder: string, database: string) {
-      const {data} = await axios.get("api/download/dump/" + this.backupId + '/' + folder, {responseType: 'blob'})
+      const data = await this.$axios.$get("/api/download/dump/" + this.backupId + '/' + folder, {responseType: 'blob'})
       if (!window.navigator.msSaveOrOpenBlob) {
         // BLOB NAVIGATOR
         var blob = new Blob([data], {type: "application/zip"});
@@ -81,7 +80,7 @@
     }
 
     async getDumps() {
-      const {data} = await axios.get("api/backups/dumps/" + this.backupId);
+      const data = await this.$axios.$get("/api/backups/dumps/" + this.backupId);
       this.dumps = data.dumps;
     }
 

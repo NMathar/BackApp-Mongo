@@ -103,7 +103,6 @@
 </template>
 
 <script lang="ts">
-  import axios from "axios";
   import {Prop, Component, Vue} from "nuxt-property-decorator";
   import {Backup} from "~/types";
 
@@ -111,7 +110,7 @@
   export default class extends Vue {
     @Prop()
     backupData!: Backup
-    pw_switch: boolean =  false
+    pw_switch: boolean = false
 
     handleOk(bvModalEvt: any) {
       // Prevent modal from closing
@@ -119,15 +118,17 @@
       // Trigger submit handler
       this.handleSubmit()
     }
-    handleSubmit() {
+
+    async handleSubmit() {
       // Exit when the form isn't valid
       // if (!this.checkFormValidity()) {
       //     return
       // }
 
-      if (this.backupData.id && this.backupData.id.length > 0) {
-        axios.put("api/backups/" + this.backupData.id, this.backupData).then(res => {
-          axios.get("api/cron/restart") // restart cron to add the new server
+      try {
+        if (this.backupData.id && this.backupData.id.length > 0) {
+          await this.$axios.$put("/api/backups/" + this.backupData.id, this.backupData)
+          await this.$axios.$get("/api/cron/restart") // restart cron to add the new server
           // Hide the modal manually
           // @ts-ignore
           this.$parent.getAllBackups()
@@ -135,14 +136,11 @@
             // @ts-ignore
             this.$refs.modal.hide()
           })
-        }).catch(err => {
-          console.error(err)
-        });
-      } else {
-        delete this.backupData.id
-        //send infos to the server
-        axios.post("api/backups", this.backupData).then(res => {
-          axios.get("api/cron/restart") // restart cron to add the new server
+        } else {
+          delete this.backupData.id
+          //send infos to the server
+          await this.$axios.$post("/api/backups", this.backupData)
+          await this.$axios.$get("/api/cron/restart") // restart cron to add the new server
           // Hide the modal manually
           // @ts-ignore
           this.$parent.getAllBackups()
@@ -150,9 +148,9 @@
             // @ts-ignore
             this.$refs.modal.hide()
           })
-        }).catch(err => {
-          console.error(err)
-        });
+        }
+      } catch (e) {
+        console.log(e)
       }
     }
   }
