@@ -3,6 +3,8 @@ import express from "express"
 import * as bodyParser from "body-parser"
 import {exec} from "child_process"
 import backup from "./controller/backup";
+import auth from "./controller/auth";
+import {checkJwt} from "./middlewares/checkJwt";
 
 config()
 const {loadNuxt, build} = require("nuxt")
@@ -18,7 +20,7 @@ if (!process.env.SECRET_KEY || process.env.SECRET_KEY.length <= 0) {
   throw new Error("Please set a SECRET_KEY value in your Environment Variables")
 }
 if (!process.env.BASE_URL || process.env.BASE_URL.length <= 0) {
-  process.env.BASE_URL = "http://localhost:3000/"
+  process.env.BASE_URL = "http://localhost:3000"
 }
 if (!process.env.ADMIN_PASSWORD || process.env.ADMIN_PASSWORD.length <= 0) {
   process.env.ADMIN_PASSWORD = "admin" // please change the password
@@ -28,23 +30,26 @@ if (!process.env.ADMIN_PASSWORD || process.env.ADMIN_PASSWORD.length <= 0) {
 // }
 
 // start cron on app startup
-if(!isDev){ // start only in production to prevent to many cron processes
+if (!isDev) { // start only in production to prevent to many cron processes
   exec('npm run cron:start --silent');
 }
 
-// Create a new Note
-app.post(route + '/backups', backup.create);
+// send login
+app.post(route + '/auth/login', auth.login)
 
-// Retrieve all Notes
-app.get(route + '/backups', backup.findAll);
+// Create a new Backup
+app.post(route + '/backups', [checkJwt], backup.create);
 
-// Retrieve a single Note with noteId
+// Retrieve all Backups
+app.get(route + '/backups', [checkJwt], backup.findAll);
+
+// Retrieve a single Backup with noteId
 app.get(route + '/backups/:id', backup.findOne);
 
-// Update a Note with noteId
+// Update a Backup with BackupId
 app.put(route + '/backups/:id', backup.update);
 
-// Delete a Note with noteId
+// Delete a Backup with BackupId
 app.delete(route + '/backups/:id', backup.deleteR);
 
 app.get(route + '/backups/dumps/:id', backup.dumps)
