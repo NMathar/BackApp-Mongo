@@ -1,5 +1,5 @@
 import {config} from "dotenv"
-import express from "express"
+import express, {Request, Response} from "express"
 import * as bodyParser from "body-parser"
 import {exec} from "child_process"
 import backup from "./controller/backup";
@@ -44,24 +44,24 @@ app.post(route + '/backups', [checkJwt], backup.create);
 app.get(route + '/backups', [checkJwt], backup.findAll);
 
 // Retrieve a single Backup with noteId
-app.get(route + '/backups/:id', backup.findOne);
+app.get(route + '/backups/:id', [checkJwt], backup.findOne);
 
 // Update a Backup with BackupId
-app.put(route + '/backups/:id', backup.update);
+app.put(route + '/backups/:id', [checkJwt], backup.update);
 
 // Delete a Backup with BackupId
-app.delete(route + '/backups/:id', backup.deleteR);
+app.delete(route + '/backups/:id', [checkJwt], backup.deleteR);
 
-app.get(route + '/backups/dumps/:id', backup.dumps)
+app.get(route + '/backups/dumps/:id', [checkJwt], backup.dumps)
 
-app.get(route + '/download/dump/:id/:folder', backup.downloadDump)
+app.get(route + '/download/dump/:id/:folder', [checkJwt], backup.downloadDump)
 
-app.get(route + '/restore/dump/:id/:folder', backup.restoreDump)
+app.get(route + '/restore/dump/:id/:folder', [checkJwt], backup.restoreDump)
 
-app.get(route + '/db/test/:id', backup.testDBConnection)
+app.get(route + '/db/test/:id', [checkJwt], backup.testDBConnection)
 
 
-app.get(route + '/cron/restart', function (req, res) {
+app.get(route + '/cron/restart', [checkJwt], (req: Request, res: Response) => {
   exec('npm run cron:restart', (err, stdout, stderr) => {
     if (err) {
       res.json({success: false, message: stderr});
@@ -71,7 +71,7 @@ app.get(route + '/cron/restart', function (req, res) {
   });
 });
 
-app.get(route + '/cron/start', function (req, res) {
+app.get(route + '/cron/start', [checkJwt], (req: Request, res: Response) => {
   exec('npm run cron:start --silent', (err, stdout, stderr) => {
     if (err) {
       res.json({success: false, message: stderr});
@@ -81,7 +81,7 @@ app.get(route + '/cron/start', function (req, res) {
   });
 });
 
-app.get(route + '/cron/stop', function (req, res) {
+app.get(route + '/cron/stop', [checkJwt], (req: Request, res: Response) => {
   exec('npm run cron:stop --silent', (err, stdout, stderr) => {
     if (err) {
       res.json({success: false, message: stderr});
@@ -91,7 +91,7 @@ app.get(route + '/cron/stop', function (req, res) {
   });
 });
 
-app.get(route + '/cron/status', function (req, res) {
+app.get(route + '/cron/status', [checkJwt], (req: Request, res: Response) => {
   exec('npm run cron:status --silent', (err, stdout, stderr) => {
     // console.log(stdout);
     res.json({success: true, status: stdout})
@@ -108,7 +108,7 @@ const server = (async () => {
 
 // Build only in dev mode with hot-reloading
   if (isDev) {
-    await nuxt.ready()
+    await nuxt.ready(1)
     build(nuxt)
   }
 // Listen the server
