@@ -1,8 +1,10 @@
 import {config} from "dotenv"
-import express from "express"
+import express, {Request, Response} from "express"
 import * as bodyParser from "body-parser"
 import {exec} from "child_process"
 import backup from "./controller/backup";
+import auth from "./controller/auth";
+import {checkJwt} from "./middlewares/checkJwt";
 
 config()
 const {loadNuxt, build} = require("nuxt")
@@ -18,7 +20,7 @@ if (!process.env.SECRET_KEY || process.env.SECRET_KEY.length <= 0) {
   throw new Error("Please set a SECRET_KEY value in your Environment Variables")
 }
 if (!process.env.BASE_URL || process.env.BASE_URL.length <= 0) {
-  process.env.BASE_URL = "http://localhost:3000/"
+  process.env.BASE_URL = "http://localhost:3000"
 }
 if (!process.env.ADMIN_PASSWORD || process.env.ADMIN_PASSWORD.length <= 0) {
   process.env.ADMIN_PASSWORD = "admin" // please change the password
@@ -28,35 +30,38 @@ if (!process.env.ADMIN_PASSWORD || process.env.ADMIN_PASSWORD.length <= 0) {
 // }
 
 // start cron on app startup
-if(!isDev){ // start only in production to prevent to many cron processes
+if (!isDev) { // start only in production to prevent to many cron processes
   exec('npm run cron:start --silent');
 }
 
-// Create a new Note
-app.post(route + '/backups', backup.create);
+// send login
+app.post(route + '/auth/login', auth.login)
 
-// Retrieve all Notes
-app.get(route + '/backups', backup.findAll);
+// Create a new Backup
+app.post(route + '/backups', [checkJwt], backup.create);
 
-// Retrieve a single Note with noteId
-app.get(route + '/backups/:id', backup.findOne);
+// Retrieve all Backups
+app.get(route + '/backups', [checkJwt], backup.findAll);
 
-// Update a Note with noteId
-app.put(route + '/backups/:id', backup.update);
+// Retrieve a single Backup with noteId
+app.get(route + '/backups/:id', [checkJwt], backup.findOne);
 
-// Delete a Note with noteId
-app.delete(route + '/backups/:id', backup.deleteR);
+// Update a Backup with BackupId
+app.put(route + '/backups/:id', [checkJwt], backup.update);
 
-app.get(route + '/backups/dumps/:id', backup.dumps)
+// Delete a Backup with BackupId
+app.delete(route + '/backups/:id', [checkJwt], backup.deleteR);
 
-app.get(route + '/download/dump/:id/:folder', backup.downloadDump)
+app.get(route + '/backups/dumps/:id', [checkJwt], backup.dumps)
 
-app.get(route + '/restore/dump/:id/:folder', backup.restoreDump)
+app.get(route + '/download/dump/:id/:folder', [checkJwt], backup.downloadDump)
 
-app.get(route + '/db/test/:id', backup.testDBConnection)
+app.get(route + '/restore/dump/:id/:folder', [checkJwt], backup.restoreDump)
+
+app.get(route + '/db/test/:id', [checkJwt], backup.testDBConnection)
 
 
-app.get(route + '/cron/restart', function (req, res) {
+app.get(route + '/cron/restart', [checkJwt], (req: Request, res: Response) => {
   exec('npm run cron:restart', (err, stdout, stderr) => {
     if (err) {
       res.json({success: false, message: stderr});
@@ -66,7 +71,7 @@ app.get(route + '/cron/restart', function (req, res) {
   });
 });
 
-app.get(route + '/cron/start', function (req, res) {
+app.get(route + '/cron/start', [checkJwt], (req: Request, res: Response) => {
   exec('npm run cron:start --silent', (err, stdout, stderr) => {
     if (err) {
       res.json({success: false, message: stderr});
@@ -76,7 +81,7 @@ app.get(route + '/cron/start', function (req, res) {
   });
 });
 
-app.get(route + '/cron/stop', function (req, res) {
+app.get(route + '/cron/stop', [checkJwt], (req: Request, res: Response) => {
   exec('npm run cron:stop --silent', (err, stdout, stderr) => {
     if (err) {
       res.json({success: false, message: stderr});
@@ -86,7 +91,7 @@ app.get(route + '/cron/stop', function (req, res) {
   });
 });
 
-app.get(route + '/cron/status', function (req, res) {
+app.get(route + '/cron/status', [checkJwt], (req: Request, res: Response) => {
   exec('npm run cron:status --silent', (err, stdout, stderr) => {
     // console.log(stdout);
     res.json({success: true, status: stdout})
@@ -103,7 +108,7 @@ const server = (async () => {
 
 // Build only in dev mode with hot-reloading
   if (isDev) {
-    await nuxt.ready()
+    await nuxt.ready(1)
     build(nuxt)
   }
 // Listen the server

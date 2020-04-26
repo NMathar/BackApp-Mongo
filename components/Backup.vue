@@ -80,7 +80,7 @@
     }
 
     async testConnection(id: string) {
-      const {data} = await axios.get("api/db/test/" + id);
+      const data = await this.$axios.$get("/api/db/test/" + id);
       try {
         if (data.connection) {
           this.$bvToast.toast(`Connection was successful`, {
@@ -122,14 +122,15 @@
     }
 
     async getAllBackups() {
-      const {data} = await axios.get("api/backups");
+      const data = await this.$axios.$get("/api/backups");
       this.backups = data
     }
 
     async deleteBackup(id: string) {
       let val = await this.$bvModal.msgBoxConfirm('Are you sure?')
       if (val) {
-        axios.delete("api/backups/" + id).then(res => {
+        try{
+          await this.$axios.$delete("/api/backups/" + id)
           // @ts-ignore
           this.$parent.restartCron(); // restart cron to prevent still updates for the deleted server
           this.getAllBackups();
@@ -139,9 +140,9 @@
             variant: 'success',
             solid: true,
           })
-        }).catch(err => {
-          console.error(err)
-        })
+        }catch (e) {
+          console.error(e)
+        }
       }
     }
 

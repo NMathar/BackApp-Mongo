@@ -43,6 +43,9 @@ const config: Configuration = {
     '@nuxtjs/axios',
     '@nuxtjs/dotenv'
   ],
+  plugins: [
+    { src: "~/plugins/axios" }
+  ],
   /*
    ** Build configuration
    */
