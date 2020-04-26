@@ -21,22 +21,52 @@
 </template>
 
 <script lang="ts">
-  import {Component, Vue} from 'nuxt-property-decorator'
+  import {Component, Getter, Vue} from 'nuxt-property-decorator'
   import {BIcon, BIconLockFill} from 'bootstrap-vue'
+  const Cookie = process.client ? require("js-cookie") : undefined
 
   @Component({components: {BIcon, BIconLockFill}})
   export default class extends Vue {
     password: string = ""
+    startRoute: string = "/dashboard"
+    @Getter isAuthenticated!: boolean
 
     async userLogin() {
       try {
         // @ts-ignore
-        let response = await this.$auth.loginWith('local', {data: { password: this.password }})
-        console.log(response)
+        const data = await this.$axios.$post("/api/auth/login", {
+          password: this.password
+        })
+        this.$store.commit("setToken", data.token) // mutating to store for client rendering
+        Cookie.set("token", data.token, {
+          expires: parseInt(process.env.COOKIE_EXPIRE || "7")
+        }) // saving token in cookie for server rendering
+        // show success message
+        // this.$bvToast.toast('Du hast dich erfolgreich angemeldet.', {
+        //     title: 'Login Erfolgreich',
+        //     autoHideDelay: 1000,
+        //     solid: true,
+        //     variant: 'success',
+        // });
+        // timeout for animation
+        // setTimeout(() => {
+        await this.$router.push(this.startRoute)
       } catch (err) {
         console.log(err)
+        this.$bvToast.toast('Wrong password.', {
+            title: 'Login Failed',
+            autoHideDelay: 1000,
+            solid: true,
+            variant: 'danger',
+        });
       }
     }
+    mounted() {
+      if (this.isAuthenticated) {
+        this.$router.push(this.startRoute)
+      }
+    }
+
   }
 </script>
 

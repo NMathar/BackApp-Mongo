@@ -1,6 +1,5 @@
 <template>
   <div class="container">
-    {{ $auth.loggedIn }}
     <Login/>
   </div>
 </template>

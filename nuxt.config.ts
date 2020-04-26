@@ -41,8 +41,10 @@ const config: Configuration = {
     // Doc: https://bootstrap-vue.js.org/docs/
     "bootstrap-vue/nuxt",
     '@nuxtjs/axios',
-    '@nuxtjs/auth',
     '@nuxtjs/dotenv'
+  ],
+  plugins: [
+    { src: "~/plugins/axios" }
   ],
   /*
    ** Build configuration
@@ -54,20 +56,6 @@ const config: Configuration = {
     extend(config, ctx) {
     }
   },
-  auth: {
-    strategies: {
-      local: {
-        endpoints: {
-          login: {url: '/api/auth/login', method: 'post', propertyName: 'token'},
-          logout: {url: '/api/auth/logout', method: 'post'}
-        },
-        tokenRequired: true,
-        tokenType: '',
-        autoFetchUser: false
-      }
-    }
-  },
-  middleware: ['auth'],
   env: {
     SECRET_KEY: process.env.SECRET_KEY || ""
   }
