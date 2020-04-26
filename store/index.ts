@@ -24,15 +24,15 @@ export const getters: GetterTree<RootState, any> = {
 
 export const actions: ActionTree<RootState, RootState> = {
   async nuxtServerInit({commit}, {req}) {
-    let tokenState: string = ""
+    let cookieData: any = {token: ""}
     if (req.headers.cookie) {
       const parsed = await cookieparser.parse(req.headers.cookie)
       try {
-        tokenState = await JSON.parse(parsed.token)
+        cookieData = parsed
       } catch (err) {
         // No valid cookie found
       }
     }
-    commit("setToken", tokenState)
+    commit("setToken", cookieData.token)
   }
 }
