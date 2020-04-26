@@ -41,18 +41,8 @@
         Cookie.set("token", data.token, {
           expires: parseInt(process.env.COOKIE_EXPIRE || "7")
         }) // saving token in cookie for server rendering
-        // show success message
-        // this.$bvToast.toast('Du hast dich erfolgreich angemeldet.', {
-        //     title: 'Login Erfolgreich',
-        //     autoHideDelay: 1000,
-        //     solid: true,
-        //     variant: 'success',
-        // });
-        // timeout for animation
-        // setTimeout(() => {
         await this.$router.push(this.startRoute)
       } catch (err) {
-        console.log(err)
         this.$bvToast.toast('Wrong password.', {
             title: 'Login Failed',
             autoHideDelay: 1000,
