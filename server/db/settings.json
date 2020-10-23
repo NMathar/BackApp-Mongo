@@ -1,3 +1,33 @@
 {
-  "backups": []
+  "backups": [
+    {
+      "id": "810101fc-bf79-4f6e-bfa0-f75659adff5c",
+      "database": "test",
+      "collections": [
+        "user",
+        "test"
+      ],
+      "hostname": "localhost",
+      "port": "2701",
+      "username": "root",
+      "schedule": "*/2 * * * *",
+      "authenticationDatabase": "admin",
+      "max_dumps": 3,
+      "password": "U2FsdGVkX19vqZFBbcoYeYKmJiQ="
+    },
+    {
+      "id": "f5d151ec-69d3-4895-8d6f-e78d0a7379ce",
+      "database": "rocketChat",
+      "collections": [
+        "user"
+      ],
+      "hostname": "srv-monogo01",
+      "port": "2701",
+      "username": "root",
+      "schedule": "*/5 * * * *",
+      "authenticationDatabase": "admin",
+      "max_dumps": 3,
+      "password": "U2FsdGVkX1/nS+yZjoNU004sJUQ="
+    }
+  ]
 }

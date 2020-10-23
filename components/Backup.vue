@@ -20,7 +20,11 @@
         <b-button size="sm" variant="primary" @click="backupEdit(row.item)">
           <b-icon icon="pencil" aria-hidden="true"></b-icon>
         </b-button>
-        <b-button size="sm" variant="info" @click="testConnection(row.item.id)">Test Connection</b-button>
+        <b-button size="sm" variant="info" @click="testConnection(row.item.id)" :disabled="testConnectionRunning">
+          <b-spinner v-if="testConnectionRunning" small></b-spinner>
+          <span v-if="testConnectionRunning" class="sr-only">Loading...</span>
+          Test Connection
+        </b-button>
       </template>
       <template v-slot:cell(show_dumps)="row">
         <b-button size="sm" @click="row.toggleDetails" class="mr-2">
@@ -69,6 +73,7 @@
       'actions', 'show_dumps']
     backups: Backup[] = []
     backupData: Backup | null = null
+    testConnectionRunning: boolean = false
     empty_backup: Backup = {
       database: '',
       collections: [],
@@ -80,6 +85,7 @@
     }
 
     async testConnection(id: string) {
+      this.testConnectionRunning = true
       const data = await this.$axios.$get("/api/db/test/" + id);
       try {
         if (data.connection) {
@@ -97,6 +103,7 @@
             solid: true,
           })
         }
+        this.testConnectionRunning = false
       } catch (e) {
         this.$bvToast.toast(`Error: connection failed!`, {
           title: 'DB Connection',
@@ -104,6 +111,7 @@
           variant: 'danger',
           solid: true,
         })
+        this.testConnectionRunning = false
       }
     }
 
