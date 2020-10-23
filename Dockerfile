@@ -9,7 +9,9 @@ RUN apt-get update
 RUN apt-get install -y mongo-tools
 
 # copy the app, note .dockerignore
-COPY . /usr/src/app/
+COPY . .
+COPY docker/start.sh .
+RUN chmod +x start.sh
 RUN npm install --no-audit
 
 # build necessary, even if no static files are needed,
@@ -27,4 +29,4 @@ ENV NUXT_HOST=0.0.0.0
 ENV NUXT_PORT=3000
 
 # start the app
-CMD [ "npm", "start" ]
+CMD [ "./start.sh" ]

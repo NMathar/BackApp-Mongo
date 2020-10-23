@@ -1,7 +1,6 @@
 import {Configuration} from '@nuxt/types'
 
 const config: Configuration = {
-  mode: "universal",
   /*
    ** Headers of the page
    */
@@ -46,6 +45,11 @@ const config: Configuration = {
   plugins: [
     { src: "~/plugins/axios" }
   ],
+
+  axios: {
+    baseURL: process.env.BASE_URL || "http://localhost:3000"
+  },
+
   /*
    ** Build configuration
    */
