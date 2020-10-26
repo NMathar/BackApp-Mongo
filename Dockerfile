@@ -1,4 +1,4 @@
-FROM node:stretch
+FROM node:lts
 
 # create destination directory
 RUN mkdir -p /usr/src/app
