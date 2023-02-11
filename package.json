@@ -37,7 +37,7 @@
     "mongodb": "^3.6.2",
     "node-cron": "^2.0.3",
     "nodemailer": "^6.6.1",
-    "nodemon": "^2.0.6",
+    "nodemon": "^2.0.20",
     "nuxt": "^2.14.7",
     "nuxt-property-decorator": "^2.8.8",
     "rimraf": "^3.0.2",
